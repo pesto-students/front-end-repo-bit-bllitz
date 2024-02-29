@@ -16,14 +16,11 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             By{" "}
-         
           </a>
         </div>
       </div>
 
-      <div className={styles.center}>
-       
-      </div>
+      <div className={styles.center}></div>
 
       <div className={styles.grid}>
         <a
