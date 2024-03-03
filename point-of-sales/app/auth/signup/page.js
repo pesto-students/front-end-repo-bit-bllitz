@@ -1,12 +1,31 @@
+"use client"; // This is a client component 👈🏽
 import CustomInput from "@/components/auth/input/CustomInput";
 import Sidebar from "@/components/auth/sidebar/Sidebar";
 import CustomButton from "@/components/button/CustomButton";
 import { Typography } from "@mui/material";
 import styles from "../auth.module.scss";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "@/lib/redux/slices/userSlice";
 
 const signup = () => {
+  const [formData, setFormData] = useState({
+    fullname: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const userData = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const handleUserData = (e) => {
+    const { name, value } = e.target.value;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  const handleSignup = () => {};
   return (
     <div className={styles.signup}>
       <Sidebar
@@ -16,11 +35,27 @@ const signup = () => {
         linkText={"Go to Login"}
         navigateLink={"/auth/signin"}
       >
-        <CustomInput placeholder={"Fullname"} />
-        <CustomInput placeholder={"Email"} />
-        <CustomInput placeholder={"Password"} />
-        <CustomInput placeholder={"Confirm password"} />
-        <CustomButton text={"Sign up"} />
+        <CustomInput
+          placeholder={"Fullname"}
+          onChange={handleUserData}
+          inputName={"fullName"}
+        />
+        <CustomInput
+          placeholder={"Email"}
+          onChange={handleUserData}
+          inputName={"email"}
+        />
+        <CustomInput
+          placeholder={"Password"}
+          onChange={handleUserData}
+          inputName={"password"}
+        />
+        <CustomInput
+          placeholder={"Confirm password"}
+          onChange={handleUserData}
+          inputName={"confirmPassword"}
+        />
+        <CustomButton text={"Sign up"} onClick={handleSignup} />
       </Sidebar>
     </div>
   );

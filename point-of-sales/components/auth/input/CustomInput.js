@@ -7,6 +7,7 @@ const CustomInput = ({
   endAdornment,
   startAdornment,
   onChange,
+  inputName
 }) => {
   return (
     <div style={{ width: "100%" }}>
@@ -19,6 +20,7 @@ const CustomInput = ({
         fullWidth
         disableUnderline
         className={styles.customInput}
+        name={inputName}
       />
     </div>
   );
