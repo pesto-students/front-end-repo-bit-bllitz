@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
+import { supabase } from "../../../supabase/supabase";
 
 const signup = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +26,17 @@ const signup = () => {
       [name]: value,
     }));
   };
-  const handleSignup = () => {};
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    });
+    if (error) setAlert({ msg: error.message, type: "error" });
+    else setAlert({ msg: "Check your email!", type: "info" });
+  };
+
   return (
     <div className={styles.signup}>
       <Sidebar
