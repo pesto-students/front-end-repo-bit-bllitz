@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../supabase/supabase";
 
-const Signin = () => {
+const signin = () => {
   const [loading, setLoading] = useState(false);
   const { push } = useRouter();
   const [email, setEmail] = useState("");
@@ -27,9 +27,6 @@ const Signin = () => {
     if (error) setAlert({ msg: error.message, type: "error" });
     setLoading(false);
     if (data.session) push("/menu/categories");
-
-    console.log('data',data)
-    
   };
 
   return (
@@ -60,4 +57,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default signin;

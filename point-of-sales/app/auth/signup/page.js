@@ -12,7 +12,7 @@ import { supabase } from "../../../supabase/supabase";
 
 const signup = () => {
   const [formData, setFormData] = useState({
-    fullname: "",
+    fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -20,13 +20,14 @@ const signup = () => {
   const userData = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const handleUserData = (e) => {
-    const { name, value } = e.target.value;
+    const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
 
+  console.log('formData',formData)
   const handleSignup = async (e) => {
     e.preventDefault();
     const { data, error } = await supabase.auth.signUp({
