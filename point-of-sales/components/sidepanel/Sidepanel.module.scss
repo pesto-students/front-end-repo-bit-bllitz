@@ -1,0 +1,63 @@
+/* styles/SidePanel.scss */
+.sidePanel {
+  width: 250px; // Adjust width as needed
+  height: 100vh; // Make it full height
+  position: fixed; // Fix it to the viewport
+  top: 0;
+  left: 0;
+  border-right: 1px solid #ccc; // Optional: add border
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  .navContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 1.5rem;
+    width: 100%;
+    .navTab {
+      width: 90%;
+      padding: 1rem;
+      &.active {
+        background-color: #ffd049;
+        border-radius: 10px;
+      }
+      .icon {
+        min-width: 35px;
+      }
+    }
+  }
+
+  .profile {
+    width: 80%;
+    padding: 0.9rem 0.5rem;
+    position: absolute;
+    bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 30px;
+    .avatar {
+      margin-bottom: 0.2rem;
+      height: 80px;
+      width: 80px;
+    }
+    .name {
+      font-weight: 600;
+      line-height: 1.9rem;
+      font-size: 1.2rem;
+      font-family: "Gilory-SemiBold";
+    }
+    .designation {
+      margin-bottom: 0.5rem;
+      color: #a69e9e;
+    }
+    .profileBtn {
+      display: flex;
+      width: 80%;
+    }
+  }
+}

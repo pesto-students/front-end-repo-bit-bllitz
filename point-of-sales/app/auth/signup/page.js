@@ -8,8 +8,9 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
-
+import { useRouter } from "next/navigation";
 const signup = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
@@ -25,7 +26,9 @@ const signup = () => {
       [name]: value,
     }));
   };
-  const handleSignup = () => {};
+  const handleSignup = () => {
+    router.push("/analytics");
+  };
   return (
     <div className={styles.signup}>
       <Sidebar
