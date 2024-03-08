@@ -10,9 +10,9 @@ export async function middleware(req) {
   } = await supabase.auth.getUser();
 
   // if user is not signed in redirect the user to /auth/login
-  if (!user) {
-    return NextResponse.redirect(new URL("/auth/signin", req.url));
-  }
+  // if (!user) {
+  //   return NextResponse.redirect(new URL("/auth/signin", req.url));
+  // }
 
   return res;
 }
