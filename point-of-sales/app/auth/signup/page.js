@@ -8,34 +8,54 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
+import { supabase } from "../../../supabase/supabase";
 import { useRouter } from "next/navigation";
 const signup = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    fullname: "",
+    fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [user, setUser] = useState(undefined);
   const userData = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const handleUserData = (e) => {
-    const { name, value } = e.target.value;
+    const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
-  const handleSignup = () => {
-    router.push("/analytics");
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+    });
+    if (error) {
+      console.log(error.message);
+    } else {
+      setUser(data);
+    }
   };
+
   return (
     <div className={styles.signup}>
       <Sidebar
         title={"Welcome!"}
         subtitle={"Please, sign up to continue"}
-        actionText={"Already have an account?"}
-        linkText={"Go to Login"}
+        actionText={
+          user
+            ? "Success! Please check your email for further instructions "
+            : "Already have an account?"
+        }
+        linkText={user ? "" : "Go to Login"}
         navigateLink={"/auth/signin"}
       >
         <CustomInput
