@@ -28,7 +28,7 @@ const signin = () => {
       console.log(error.message)
     }
     setLoading(false);
-    if (data.session) push("/menu/categories");
+    if (data.session) push("/dashboard");
   };
 
   return (
