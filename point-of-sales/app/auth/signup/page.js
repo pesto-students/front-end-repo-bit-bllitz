@@ -17,6 +17,7 @@ const signup = () => {
     password: "",
     confirmPassword: "",
   });
+  const [user, setUser] = useState(undefined);
   const userData = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const handleUserData = (e) => {
@@ -36,8 +37,11 @@ const signup = () => {
         emailRedirectTo: window.location.origin,
       },
     });
-    if (error) setAlert({ msg: error.message, type: "error" });
-    else setAlert({ msg: "Check your email!", type: "info" });
+    if (error) {
+      console.log(error.message);
+    } else {
+      setUser(data);
+    }
   };
 
   return (
@@ -45,8 +49,12 @@ const signup = () => {
       <Sidebar
         title={"Welcome!"}
         subtitle={"Please, sign up to continue"}
-        actionText={"Already have an account?"}
-        linkText={"Go to Login"}
+        actionText={
+          user
+            ? "Success! Please check your email for further instructions "
+            : "Already have an account?"
+        }
+        linkText={user ? "" : "Go to Login"}
         navigateLink={"/auth/signin"}
       >
         <CustomInput

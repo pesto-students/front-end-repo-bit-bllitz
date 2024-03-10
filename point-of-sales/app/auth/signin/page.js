@@ -24,7 +24,9 @@ const signin = () => {
       email,
       password,
     });
-    if (error) setAlert({ msg: error.message, type: "error" });
+    if (error) {
+      console.log(error.message)
+    }
     setLoading(false);
     if (data.session) push("/menu/categories");
   };
