@@ -9,8 +9,9 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
 import { supabase } from "../../../supabase/supabase";
-
+import { useRouter } from "next/navigation";
 const signup = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
