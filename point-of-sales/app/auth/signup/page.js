@@ -27,12 +27,14 @@ const signup = () => {
     }));
   };
 
-  console.log('formData',formData)
   const handleSignup = async (e) => {
     e.preventDefault();
     const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
     });
     if (error) setAlert({ msg: error.message, type: "error" });
     else setAlert({ msg: "Check your email!", type: "info" });

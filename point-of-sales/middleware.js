@@ -4,19 +4,11 @@ import { NextResponse } from "next/server";
 export async function middleware(req) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // if user is not signed in redirect the user to /auth/login
-  // if (!user) {
-  //   return NextResponse.redirect(new URL("/auth/signin", req.url));
-  // }
+  await supabase.auth.getSession();
 
   return res;
 }
 
 export const config = {
-  matcher: ['/', '/menu/categories'],
+  matcher: ["/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)"],
 };
