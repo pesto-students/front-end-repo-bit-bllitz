@@ -1,0 +1,19 @@
+@mixin dataStyles {
+  font-family: "Gilory-SemiBold";
+  text-align: center;
+}
+.progressContainer {
+  width: 90%;
+  .dataHead {
+    font-size: 0.9rem;
+    @include dataStyles();
+    margin-bottom: 0.5rem
+  }
+  .dataPoints {
+    @include dataStyles();
+    font-size: 1.2rem;
+  font-family: "Gilory-SemiBold";
+letter-spacing: 0.08rem;
+    margin: 0.2rem 0;
+  }
+}
