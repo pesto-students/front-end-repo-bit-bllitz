@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../supabase/supabase";
 
-const signin = () => {
+const Signin = () => {
   const [loading, setLoading] = useState(false);
   const { push } = useRouter();
   const [email, setEmail] = useState("");
@@ -59,4 +59,4 @@ const signin = () => {
   );
 };
 
-export default signin;
+export default Signin;
