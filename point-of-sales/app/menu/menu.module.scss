@@ -1,0 +1,32 @@
+.menu {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 24px 24px;
+}
+
+.image {
+    margin : 0px 32px;
+    border-radius: 16px;
+    box-shadow: 3px 5px 9px #888888;
+}
+
+.price {
+    color: #FFD049;
+}
+
+.quantity {
+    color: #A69E9E;
+}
+
+.drawer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 100%;
+
+}
+
+.applyButton {
+    width: 80%;
+}

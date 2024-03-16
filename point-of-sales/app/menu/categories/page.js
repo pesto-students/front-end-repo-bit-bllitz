@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import ActionAreaCard from "../../../components/card/ActionAreaCard.js";
-import styles from "./categories.module.scss";
+import styles from "../menu.module.scss";
 import { Typography, Modal, Box, Paper } from "@mui/material";
 import CustomModal from "@/components/modal/CustomModal.js";
 import CustomInput from "@/components/auth/input/CustomInput.js";
@@ -63,9 +63,7 @@ const Categories = () => {
       <div className={styles.menu}>
         {mockData.map((data) => (
           <ActionAreaCard
-            uri={data.uri}
-            title={data.title}
-            content={data.content}
+            data={data}
             onClick={onClickHandle}
           />
         ))}
