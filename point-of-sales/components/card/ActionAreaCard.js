@@ -5,10 +5,11 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
 
-export default function ActionAreaCard({ title, content, uri, onClick }) {
+export default function ActionAreaCard({ data, onClick }) {
+  const {title, content, uri } = data;
 
   return (
-    <Card sx={{ maxWidth: 345 }} onClick={onClick}>
+    <Card sx={{ maxWidth: 345 }} onClick={() => onClick(data)}>
       <CardActionArea>
         <CardMedia
           component="img"
