@@ -34,17 +34,18 @@ const SidePanel = ({ style }) => {
     { href: "/settings", icon: Settings, primary: "Settings" },
   ];
 
-  const [activeTab, setActiveTab] = useState(sidePanel.selectedTab);
+  const [activeTab, setActiveTab] = useState({ href: "", index: 0 });
 
-  const handleTabClick = (e, href) => {
+  const handleProfile = () => {
+    router.push("/profile");
+  };
+  const handleTabClick = (e, href, index) => {
     e.preventDefault();
-    setActiveTab(href);
+    setActiveTab({ href, index });
     router.push(href);
     dispatch(setSelectedTab(href));
   };
-  useEffect(() => {
-    console.log("active", activeTab);
-  }, [activeTab]);
+
 
   return (
     <div className={styles.sidePanel}>
@@ -57,9 +58,9 @@ const SidePanel = ({ style }) => {
             component="a"
             href={item.href}
             className={`${styles.navTab} ${
-              activeTab === item.href ? styles.active : ""
+              activeTab.index === index ? styles.active : ""
             }`}
-            onClick={(e) => handleTabClick(e, item.href)}
+            onClick={(e) => handleTabClick(e, item.href, index)}
           >
             <ListItemIcon className={styles.icon}>
               <item.icon />
@@ -77,7 +78,7 @@ const SidePanel = ({ style }) => {
           Waiter
         </Typography>
         <div className={styles.profileBtn}>
-          <CustomButton text={"Open Profile"} />
+          <CustomButton onClick={handleProfile} text={"Open Profile"} />
         </div>
       </Card>
     </div>
