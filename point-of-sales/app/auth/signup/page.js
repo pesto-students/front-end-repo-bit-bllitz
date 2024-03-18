@@ -10,7 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
 import { supabase } from "../../../supabase/supabase";
 import { useRouter } from "next/navigation";
-const signup = () => {
+
+const Signup = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     fullName: "",
@@ -84,4 +85,4 @@ const signup = () => {
   );
 };
 
-export default signup;
+export default Signup;
