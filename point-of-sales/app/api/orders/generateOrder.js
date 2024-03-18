@@ -1,5 +1,6 @@
 import { supabase } from "../../../supabase/supabase"
 import { generateOrder } from "@/lib/redux/slices/orderSlice";
+import { store } from "@/lib/redux/store";
 export default async function handler(req, res) {
     if (req.method === 'GET') {
       try {
