@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
 
 export default function ActionAreaCard({ data, onClick }) {
-  const {title, content, uri } = data;
+  const {name, content, image_url } = data;
 
   return (
     <Card sx={{ maxWidth: 345 }} onClick={() => onClick(data)}>
@@ -14,12 +14,12 @@ export default function ActionAreaCard({ data, onClick }) {
         <CardMedia
           component="img"
           height="140"
-          image={uri}
+          image={image_url}
           alt="green iguana"
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {title}
+            {name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {content}
