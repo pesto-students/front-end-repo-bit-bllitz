@@ -19,16 +19,20 @@ const signin = () => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      console.log(error.message)
+
+    try {
+      setLoading(true);
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      setLoading(false);
+      console.log('data',data);
+      if (data.session) push("/dashboard");
+    } catch (error) {
+      console.log(error.message);
     }
-    setLoading(false);
-    if (data.session) push("/dashboard");
   };
 
   return (

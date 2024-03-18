@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../app/profile/profile.module.scss";
 import { Grid, Typography } from "@mui/material";
 import CustomInput from "../auth/input/CustomInput";
 import KeyIcon from "@mui/icons-material/Key";
 import CustomButton from "../button/CustomButton";
-const UserLoginData = () => {
-  const handleChange = () => {};
+import { supabase } from "../../supabase/supabase";
+const UserLoginData = ({ userEmail, userId }) => {
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    console.log(name, value, "nameval");
+    setEmail(value); // Update state with the new value
+  };
   return (
     <div>
       <Typography variant="h5" className={styles.infoCopy}>
@@ -19,6 +24,7 @@ const UserLoginData = () => {
             inputName={"email"}
             onChange={handleChange}
             height={"2rem"}
+            value={userEmail}
           />
         </Grid>
         <Grid item md={0.4} sm={1} />
@@ -29,6 +35,7 @@ const UserLoginData = () => {
             inputName={"salesId"}
             onChange={handleChange}
             height={"2rem"}
+            value={userId}
           />
         </Grid>
         <Grid item md={5.8} sm={5}>

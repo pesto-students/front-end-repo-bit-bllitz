@@ -18,6 +18,8 @@ import {
 import { Doughnut, Line } from "react-chartjs-2";
 import LinearProgressComponent from "@/components/linearProgress/LinearProgress";
 import { supabase } from "../../supabase/supabase";
+import { useDispatch } from "react-redux";
+import { setUserData } from "@/lib/redux/slices/userSlice";
 // Register ChartJS components using ChartJS.register
 ChartJS.register(
   CategoryScale,
@@ -31,18 +33,41 @@ ChartJS.register(
 const Dashboard = () => {
   const [value, setValue] = useState("1");
   const [totalOrdersCount, setTotalOrdersCount] = useState(0);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      console.log("session", session);
+      dispatch(
+        setUserData({
+          accessToken: session.access_token,
+          expiresAt: session.expires_at,
+          expiresIn: session.expires_in,
+          refreshToken: session.refresh_token,
+          metadata: {
+            email: session.user.email,
+            userId: session.user.id,
+            sessionId: session.user.session_id,
+          },
+        })
+      );
+    };
+
+    fetchSession();
+  }, []);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const getPercentageOfOrders=(data)=>{
-
-  }
+  const getPercentageOfOrders = (data) => {};
   const getTotalOrders = async () => {
     try {
       const totalOrders = await fetch("/api/orders");
       console.log("totalOrders", totalOrders.data);
-      const data=totalOrders.data
-      setOrders
+      const data = totalOrders.data;
+      setOrders;
     } catch (error) {
       console.error("Error fetching orders:", error.message);
     }

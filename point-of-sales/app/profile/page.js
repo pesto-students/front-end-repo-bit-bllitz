@@ -16,10 +16,29 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import PersonalInfo from "@/components/profile/PersonalInfo";
 import UserLoginData from "@/components/profile/UserLoginData";
-import { useRouter } from "next/navigation";
-import {supabase} from '../../supabase/supabase'
+import { redirect, useRouter } from "next/navigation";
+import { supabase } from "../../supabase/supabase";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "@/lib/redux/slices/userSlice";
 const page = () => {
- 
+  const auth = useSelector((state) => state.auth);
+  console.log("authinprof", auth);
+  const { user: { metadata = {} } = {} } = auth;
+
+  const { email = "" } = metadata;
+  const [userData, setUserData] = useState({});
+
+  const getUserData = async () => {
+    const user = await supabase.auth.getUser();
+    console.log("userData", user);
+    setUserData(user);
+  };
+  useEffect(() => {
+    getUserData();
+  }, []);
+  const {
+    data: { user: { email: userEmail = "", id: userId = "" } = {} } = {},
+  } = userData;
   const style = {
     position: "absolute",
     top: "50%",
@@ -33,8 +52,17 @@ const page = () => {
   };
   const [selectedIndex, setSelectedIndex] = useState(1);
   const router = useRouter();
-  const handleListItemClick = (event, index) => {
+  const handleListItemClick = async (event, index) => {
     setSelectedIndex(index);
+    switch (index) {
+      case 3:
+        const data = await supabase.auth.signOut();
+        console.log("datainauth", data);
+        break;
+
+      default:
+        break;
+    }
   };
   const [deleteModal, setDelModal] = useState(false);
 
@@ -44,11 +72,11 @@ const page = () => {
   const getContent = () => {
     switch (selectedIndex) {
       case 1:
-        return <PersonalInfo />;
+        return <PersonalInfo userEmail={userEmail} />;
       case 2:
-        return <UserLoginData />;
+        return <UserLoginData userEmail={userEmail} userId={userId} />;
       case 3:
-        router.push("/auth/signup");
+        router.push("/auth/signin");
       default:
         break;
     }
@@ -130,9 +158,10 @@ const page = () => {
           </Card>
         </Grid>
         <Grid item md={1}></Grid>
-        <Grid item md={7} className={styles.formContainer} sm={12} xs={12}>
+        <Grid item md={5} className={styles.formContainer} sm={12} xs={12}>
           {getContent()}
         </Grid>
+        <Grid item md={2.5} xs={0} />
       </Grid>
       {deleteModal && (
         <Modal

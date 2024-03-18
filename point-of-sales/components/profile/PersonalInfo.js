@@ -10,15 +10,17 @@ import {
 } from "@mui/material";
 import CustomInput from "../auth/input/CustomInput";
 import CustomButton from "../button/CustomButton";
-const PersonalInfo = () => {
+import { supabase } from "../../supabase/supabase";
+const PersonalInfo = ({userEmail}) => {
+  
   const [formData, setFormData] = useState({
     gender: "", // Initialize gender as an empty string
-    firstname: "",
-    lastname: "",
+    first_name: "",
+    last_name: "",
     email: "",
-    phoneNumber: "",
-    dob: "",
-    location: "",
+    phone_number: "",
+    date_of_birth: "",
+    city: "",
     pincode: "",
   });
   const handleChange = (event) => {
@@ -29,9 +31,28 @@ const PersonalInfo = () => {
       [name]: value,
     });
   };
-  const handleSaveInfo = () => {
+
+  const handleSaveInfo = async () => {
+    try {
+      const response = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      console.log("Profile updated successfully:", response);
+      return response;
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
     // Handle saving form data here
-    console.log(formData); // Just logging for now, you can implement saving logic
+    // Just logging for now, you can implement saving logic
   };
   return (
     <div>
@@ -65,7 +86,7 @@ const PersonalInfo = () => {
         <Grid item md={5.8} sm={12} xs={12}>
           <div className={styles.label}>Firstname</div>
           <CustomInput
-            inputName={"firstname"}
+            inputName={"first_name"}
             height={"2rem"}
             placeholder={"Firstname"}
             type={"text"}
@@ -79,7 +100,7 @@ const PersonalInfo = () => {
           <CustomInput
             height={"2rem"}
             type={"text"}
-            inputName={"lastname"}
+            inputName={"last_name"}
             placeholder={"Lastname"}
             onChange={handleChange}
           />
@@ -94,6 +115,7 @@ const PersonalInfo = () => {
           onChange={handleChange}
           type={"email"}
           inputName={"email"}
+          value={userEmail}
         />
       </Grid>
       <Grid container>
@@ -105,7 +127,7 @@ const PersonalInfo = () => {
             placeholder={"Phone number"}
             onChange={handleChange}
             type={"tel"}
-            inputName={"phoneNumber"}
+            inputName={"phone_number"}
           />
         </Grid>
         <Grid item md={0.4} />
@@ -116,7 +138,7 @@ const PersonalInfo = () => {
             height={"2rem"}
             placeholder={"DOB"}
             type={"date"}
-            inputName={"dob"}
+            inputName={"date_of_birth"}
             onChange={handleChange}
           />
         </Grid>
@@ -127,7 +149,7 @@ const PersonalInfo = () => {
 
           <CustomInput
             height={"2rem"}
-            inputName={"location"}
+            inputName={"city"}
             placeholder={"Location"}
             onChange={handleChange}
           />
