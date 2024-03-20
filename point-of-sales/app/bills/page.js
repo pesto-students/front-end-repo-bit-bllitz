@@ -27,14 +27,14 @@ const Bills = () => {
         </Box>
         <Box className={styles.box}>
           <div>
-          <Typography variant="h6">Payment History</Typography>
-          <Typography variant="h5">
-            Order#35
-            <Button className={styles.statusButton} variant="contained">
-              Active
-            </Button>
-            <Divider className={styles.divider} />
-          </Typography>
+            <Typography variant="h6">Payment History</Typography>
+            <Typography variant="h5">
+              Order#35
+              <Button className={styles.statusButton} variant="contained">
+                Active
+              </Button>
+              <Divider className={styles.divider} />
+            </Typography>
             <Typography variant="h6">Details</Typography>
             <TableContainer>
               <Table>

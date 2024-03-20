@@ -1,34 +1,34 @@
 .billContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 .box {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color: #F8F8F8;
-    float: right;
-    width: 50%;
-    height: 100vh;
-    border-radius: 32px 0px 0px 32px;
-    padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #f8f8f8;
+  float: right;
+  width: 50%;
+  height: 100vh;
+  border-radius: 32px 0px 0px 32px;
+  padding: 32px;
 }
 .orderBox {
-    width: 40%;
+  width: 40%;
 }
 .statusButton {
-    background-color: #FFD049;
-    float: right;
-    color: black;
-    width: 120px;
-    border-radius: 4px;
-    padding: 2px;
+  background-color: #ffd049;
+  float: right;
+  color: black;
+  width: 120px;
+  border-radius: 4px;
+  padding: 2px;
 }
 .divider {
-    padding : 8px;
-    margin-bottom: 16px;
+  padding: 8px;
+  margin-bottom: 16px;
 }
 .row {
-    padding : 64px;
+  padding: 64px;
 }
