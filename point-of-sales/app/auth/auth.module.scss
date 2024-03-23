@@ -4,3 +4,9 @@
   font-size: 0.8rem;
   text-align: center;
 }
+
+.signup{
+  &:global(.MuiPaper-root-MuiSnackbarContent-root){
+    padding: 1rem !important;
+  }
+}

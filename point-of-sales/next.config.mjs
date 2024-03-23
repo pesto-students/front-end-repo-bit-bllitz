@@ -7,7 +7,7 @@ const nextConfig = {
 },
   async redirects() {
     // define the destination based on the user's login status
-    const destination = isLoggedIn ? "/menu/categories" : "/auth/signup";
+    const destination = isLoggedIn ? "/dashboard" : "/auth/signup";
     return [
       {
         source: "/",
