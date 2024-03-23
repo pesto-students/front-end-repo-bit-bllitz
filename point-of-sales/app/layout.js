@@ -15,8 +15,8 @@ export default function RootLayout({ children }) {
         <body>
           <Providers>
               <div>
-                <SidePanel />
-                <main>{children}</main>
+                <SidePanel children={children} />
+                {/* <main>{children}</main> */}
               </div>
           </Providers>
         </body>

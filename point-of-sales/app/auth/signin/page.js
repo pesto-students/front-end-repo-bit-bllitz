@@ -16,20 +16,23 @@ const signin = () => {
   const { push } = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const router = useRouter();
   const handleSignIn = async (e) => {
     e.preventDefault();
 
     try {
       setLoading(true);
 
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data:dataUser, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       setLoading(false);
-      console.log('data',data);
-      if (data.session) push("/dashboard");
+      // console.log("data", data);
+      if (dataUser) {
+        router.refresh();
+        push("/dashboard");
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -45,12 +48,14 @@ const signin = () => {
         navigateLink={"/auth/signup"}
       >
         <CustomInput
-          placeholder={"Sales ID"}
+          placeholder={"Email"}
           onChange={(e) => setEmail(e.target.value)}
           value={email}
+          type={"email"}
         />
         <CustomInput
           placeholder={"Password"}
+          type={"password"}
           onChange={(e) => setPassword(e.target.value)}
           value={password}
         />

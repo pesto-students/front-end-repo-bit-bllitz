@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./profile.module.scss";
 import {
+  Alert,
   Avatar,
   Box,
   Button,
@@ -14,24 +15,23 @@ import {
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ReportIcon from "@mui/icons-material/Report";
 import PersonalInfo from "@/components/profile/PersonalInfo";
 import UserLoginData from "@/components/profile/UserLoginData";
 import { redirect, useRouter } from "next/navigation";
 import { supabase } from "../../supabase/supabase";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
+import Progress from "@/components/progress/Progress";
 const page = () => {
-  const auth = useSelector((state) => state.auth);
-  console.log("authinprof", auth);
-  const { user: { metadata = {} } = {} } = auth;
-
-  const { email = "" } = metadata;
   const [userData, setUserData] = useState({});
 
   const getUserData = async () => {
-    const user = await supabase.auth.getUser();
-    console.log("userData", user);
-    setUserData(user);
+    const { data: userData, error } = await supabase.auth.getUser();
+    console.log("userData", userData);
+    if (userData.user) {
+      const profile = userData.user.email;
+    }
   };
   useEffect(() => {
     getUserData();
@@ -46,9 +46,13 @@ const page = () => {
     transform: "translate(-50%, -50%)",
     width: 400,
     bgcolor: "background.paper",
-    border: "2px solid #000",
     boxShadow: 24,
     p: 4,
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "center",
+    borderRadius: 3,
   };
   const [selectedIndex, setSelectedIndex] = useState(1);
   const router = useRouter();
@@ -56,7 +60,13 @@ const page = () => {
     setSelectedIndex(index);
     switch (index) {
       case 3:
+        setLoading(true);
+
         const data = await supabase.auth.signOut();
+        if (!data.error) {
+          router.push("/auth/signin");
+          setLoading(false);
+        }
         console.log("datainauth", data);
         break;
 
@@ -65,10 +75,12 @@ const page = () => {
     }
   };
   const [deleteModal, setDelModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     console.log("selectedInd", selectedIndex);
   }, [selectedIndex]);
+
   const getContent = () => {
     switch (selectedIndex) {
       case 1:
@@ -76,29 +88,43 @@ const page = () => {
       case 2:
         return <UserLoginData userEmail={userEmail} userId={userId} />;
       case 3:
-        router.push("/auth/signin");
+        return <Progress loading={loading} />;
       default:
         break;
     }
   };
-  const handleDeleteAcc = () => {
-    setDelModal(true);
+  const handleDeleteAcc = async () => {
+    if (!deleteModal) {
+      setDelModal(true);
+    } else {
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      console.log("user", userData.user.id);
+      const { data: profiles, error } = await supabase.auth.admin.deleteUser(userData.user.id);
+      console.log("error", error);
+      console.log("datasup", profiles);
+      // setDelModal(false);
+      // await supabase.auth.signOut();
+      // router.push("/auth/signin");
+    }
   };
   return (
     <div className={styles.profileContainer}>
-      <div className={styles.breadcrumbs}>Dashboard / Analytics</div>
-      <Typography variant="h5" className={styles.profile}>
+      <Typography variant="h5" className={styles.header}>
         Profile
       </Typography>
 
       <Grid container className={styles.dataContainer}>
         <Grid item md={3.5} sm={12} xs={12} className={styles.cardContainer}>
           <Card className={styles.personalData} elevation={2}>
-            <Avatar sx={{ width: 120, height: 120 }} className={styles.avatar}>
+            <Avatar
+              src={"/images/avatar.png"}
+              sx={{ width: 120, height: 120 }}
+              className={styles.avatar}
+            >
               Z
             </Avatar>
             <Typography variant="h6" className={styles.staffData}>
-              Theresa Web
+              Riya Pathak
             </Typography>
             <Typography variant="body2" className={styles.staffSub}>
               Waiter
@@ -164,19 +190,30 @@ const page = () => {
         <Grid item md={2.5} xs={0} />
       </Grid>
       {deleteModal && (
-        <Modal
-          open={deleteModal}
-          onClose={() => setDelModal(false)}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
+        <Modal open={deleteModal} onClose={() => setDelModal(false)}>
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+            <ReportIcon sx={{ color: "#c3040a", fontSize: "3rem " }} />
+            <Typography
+              id="modal-modal-title"
+              className={styles.modalTitle}
+              variant="h6"
+              component="h2"
+            >
               Are you sure you want to delete your account permanently?
             </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Deleting{" "}
+            <Typography
+              id="modal-modal-description"
+              className={styles.modalSub}
+              sx={{ mt: 2 }}
+            >
+              Deleting your account will lead to the permanent loss of data.{" "}
             </Typography>
+            <div className={styles.modalBtn}>
+              <Button variant="outlined" onClick={()=>setDelModal(false)}>Cancel</Button>
+              <Button variant="contained" onClick={handleDeleteAcc}>
+                Yes, Delete
+              </Button>
+            </div>
           </Box>
         </Modal>
       )}

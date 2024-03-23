@@ -5,8 +5,9 @@ export async function middleware(req) {
   //initiate createMiddlewareClient
   const supabase = createMiddlewareClient({ req, res });
   //check if session exists
-  const { data: sessionData } = await supabase.auth.getSession();
+  const { data: sessionData,error } = await supabase.auth.getSession();
   console.log("session in middleware", sessionData);
+  console.log("error in middleware", error);
   if (!sessionData) {
     return NextResponse.rewrite(new URL("/auth/signin", req.url));
   }
