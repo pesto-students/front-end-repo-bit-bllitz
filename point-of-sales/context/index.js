@@ -23,8 +23,8 @@ export function AppWrapper({ children }) {
       try {
         setLoading(true);
         const { data } = await supabase.auth.getSession();
-        if (data) {
-          console.log("userDatain context", data);
+        console.log("userData in context", data.session);
+        if (!data.session) {
           setUser(data);
         }
       } catch (error) {
@@ -34,7 +34,6 @@ export function AppWrapper({ children }) {
       }
     };
     fetchCurrentUser();
-    console.log("userState", user);
   }, []);
 
   if (loading) {
@@ -52,7 +51,7 @@ export function AppWrapper({ children }) {
     >
       {/* children is displayed in every page */}
       <main>
-        {user?.id  && <Sidepanel/>}
+        {user?.id && <Sidepanel />}
         <div style={{ width: "100%", height: "100%" }}>{children}</div>
       </main>
     </AppContext.Provider>

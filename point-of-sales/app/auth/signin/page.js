@@ -10,21 +10,26 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { supabase } from "../../../supabase/supabase";
 import { useAppContext } from "@/context";
-import { useNavigation } from "@/hooks/useNavigation";
+import { useRouter } from "next/navigation";
 
 const Signin = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { router } = useNavigation();
+  const router = useRouter();
   const { setUser, user } = useAppContext();
   useEffect(() => {
-    console.log('userState',user);
-    if (user.id) {
-      router.push("/dashboard");
-    }
-  }, [user]);
+    const fetchSession = async () => {
+      const signinSession = await supabase.auth.getSession();
+      console.log("signing data", signinSession);
+      if (data.session == null) {
+        console.log("signin if block");
+        router.push("/dashboard");
+      }
+    };
+    fetchSession();
+  }, []);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -44,7 +49,9 @@ const Signin = () => {
       if (dataSupabase) {
         const { user, session } = dataSupabase;
         setUser(user);
+
         router.refresh();
+        router.push("/dashboard");
       }
     } catch (error) {
       console.log(error.message);

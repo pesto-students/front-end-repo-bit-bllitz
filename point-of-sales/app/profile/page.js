@@ -62,7 +62,8 @@ const page = () => {
     switch (index) {
       case 3:
         setLoading(true);
-        await supabase.auth.signOut();
+        const signoutRes = await supabase.auth.signOut();
+        console.log("signout res", signoutRes);
         router.refresh();
         router.push("/auth/signin");
         setLoading(false);

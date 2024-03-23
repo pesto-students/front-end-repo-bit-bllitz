@@ -47,14 +47,17 @@ ChartJS.register(
 const Dashboard = () => {
   const [value, setValue] = useState("1");
   const [totalOrdersCount, setTotalOrdersCount] = useState(0);
-  const { user } = useAppContext();
   const router = useRouter();
   useEffect(() => {
-    console.log('userDash',user);
-    if (!user.id) {
-      router.push("/auth/signin");
-    }
-  }, [user]);
+    const fetchSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      console.log("dashboard data", data);
+      if (data.session.user == null) {
+        router.push("/auth/signin");
+      }
+    };
+    fetchSession();
+  }, []);
   const handleChange = (event) => {
     setValue(event.target.value);
   };
