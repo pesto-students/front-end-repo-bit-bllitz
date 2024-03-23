@@ -20,9 +20,10 @@ import PersonalInfo from "@/components/profile/PersonalInfo";
 import UserLoginData from "@/components/profile/UserLoginData";
 import { redirect, useRouter } from "next/navigation";
 import { supabase } from "../../supabase/supabase";
-import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
 import Progress from "@/components/progress/Progress";
+import { useAppContext } from "@/context";
+import { NextResponse } from "next/server";
 const page = () => {
   const [userData, setUserData] = useState({});
 
@@ -61,13 +62,10 @@ const page = () => {
     switch (index) {
       case 3:
         setLoading(true);
-
-        const data = await supabase.auth.signOut();
-        if (!data.error) {
-          router.push("/auth/signin");
-          setLoading(false);
-        }
-        console.log("datainauth", data);
+        await supabase.auth.signOut();
+        router.refresh();
+        router.push("/auth/signin");
+        setLoading(false);
         break;
 
       default:
@@ -99,7 +97,9 @@ const page = () => {
     } else {
       const { data: userData, error: userErr } = await supabase.auth.getUser();
       console.log("user", userData.user.id);
-      const { data: profiles, error } = await supabase.auth.admin.deleteUser(userData.user.id);
+      const { data: profiles, error } = await supabase.auth.admin.deleteUser(
+        userData.user.id
+      );
       console.log("error", error);
       console.log("datasup", profiles);
       // setDelModal(false);
@@ -209,7 +209,9 @@ const page = () => {
               Deleting your account will lead to the permanent loss of data.{" "}
             </Typography>
             <div className={styles.modalBtn}>
-              <Button variant="outlined" onClick={()=>setDelModal(false)}>Cancel</Button>
+              <Button variant="outlined" onClick={() => setDelModal(false)}>
+                Cancel
+              </Button>
               <Button variant="contained" onClick={handleDeleteAcc}>
                 Yes, Delete
               </Button>

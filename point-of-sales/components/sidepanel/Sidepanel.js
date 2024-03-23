@@ -13,28 +13,15 @@ import { useRouter } from "next/navigation";
 import Logo from "../logo/Logo";
 import { Avatar, Button, Card, Typography } from "@mui/material";
 import { supabase } from "../../supabase/supabase";
+import { useAppContext } from "@/context";
 const drawerWidth = 240;
 
-export default function PanelDrawer({ children }) {
+export default function Sidepanel() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { user } = useAppContext();
+  console.log("user in sidepanel", user);
   const router = useRouter();
-  const [profileData, setProfileData] = useState({
-    profileName: "",
-    profileDesig: "",
-  });
-  const getSession = async () => {
-    const { data, error } = await supabase.auth.getUser();
-    console.log("datasess", data);
-    if (data.user) {
-      const name = data.user.email;
-      const designation = data.user.id;
-      setProfileData({ profileDesig: designation, profileName: name });
-    } else {
-      setProfileData({ profileDesig: "", profileName: "" });
-    }
-  };
-  useEffect(() => {
-    getSession();
-  }, []);
+
   const menuData = [
     {
       href: "/dashboard",
@@ -43,9 +30,7 @@ export default function PanelDrawer({ children }) {
     },
     { href: "/menu/categories", icon: <Fastfood />, primary: "Food & Drinks" },
     { href: "/bills", icon: <Receipt />, primary: "Bills" },
-    //   { href: "/settings", icon: Settings, primary: "Settings" },
   ];
-  const [selectedIndex, setSelectedIndex] = useState(1);
 
   const handleRoute = (href, index) => {
     setSelectedIndex(index);
@@ -94,17 +79,18 @@ export default function PanelDrawer({ children }) {
               </ListItem>
             ))}
           </List>
-          {profileData.profileName && (
+          {user && (
             <Box className={styles.profileSection}>
               <Card elevation={2} className={styles.profileCard}>
-                <Avatar src={'/images/avatar.png'} className={styles.avatar}>Z</Avatar>
+                <Avatar src={"/images/avatar.png"} className={styles.avatar}>
+                  Z
+                </Avatar>
                 <Typography variant="h6" className={styles.profileName}>
-                  {/* {profileData.profileName} */}
                   Riya Pathak
                 </Typography>
                 <Typography variant="body2" className={styles.desig}>
-                  {/* {profileData.profileDesig} */}
                   Waiter
+                  {user && user.email}
                 </Typography>
                 <Button onClick={handleProfile} className={styles.profileBtn}>
                   Show Profile
@@ -114,10 +100,6 @@ export default function PanelDrawer({ children }) {
           )}
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {/* <Toolbar /> */}
-        {children}
-      </Box>
     </Box>
   );
 }

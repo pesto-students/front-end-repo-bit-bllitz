@@ -56,4 +56,5 @@ main {
   /* padding-left: 250px; */
   padding: 0;
   overflow-y: auto;
+  display: flex;
 }

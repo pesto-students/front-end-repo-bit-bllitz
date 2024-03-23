@@ -6,32 +6,45 @@ import CustomButton from "@/components/button/CustomButton";
 import { Typography } from "@mui/material";
 import Link from "next/link";
 import styles from "../auth.module.scss";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "../../../supabase/supabase";
+import { useAppContext } from "@/context";
+import { useNavigation } from "@/hooks/useNavigation";
 
 const Signin = () => {
   const [loading, setLoading] = useState(false);
-  const { push } = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
+  const [error, setError] = useState("");
+  const { router } = useNavigation();
+  const { setUser, user } = useAppContext();
+  useEffect(() => {
+    console.log('userState',user);
+    if (user.id) {
+      router.push("/dashboard");
+    }
+  }, [user]);
+
   const handleSignIn = async (e) => {
     e.preventDefault();
-
+    if (email.length < 4 || password.length < 4) {
+      return alert("PLease enter a valid email and password");
+    }
     try {
       setLoading(true);
 
-      const { data:dataUser, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      setLoading(false);
-      // console.log("data", data);
-      if (dataUser) {
+      const { data: dataSupabase, error } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+      if (error) return setError("Sorry! something went wrong.");
+      if (dataSupabase) setLoading(false);
+      if (dataSupabase) {
+        const { user, session } = dataSupabase;
+        setUser(user);
         router.refresh();
-        push("/dashboard");
       }
     } catch (error) {
       console.log(error.message);

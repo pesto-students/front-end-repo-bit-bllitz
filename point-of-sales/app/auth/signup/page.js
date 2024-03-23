@@ -6,7 +6,6 @@ import { Snackbar, Typography } from "@mui/material";
 import styles from "../auth.module.scss";
 import React, { useState } from "react";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
 import { supabase } from "../../../supabase/supabase";
 import { useRouter } from "next/navigation";
@@ -21,8 +20,6 @@ const Signup = () => {
   });
   const [user, setUser] = useState(undefined);
   const [toast, setToast] = useState({ visible: false, msg: " " });
-  const userData = useSelector((state) => state.user);
-  const dispatch = useDispatch();
   const handleUserData = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -54,6 +51,9 @@ const Signup = () => {
       password: formData.password,
       options: {
         emailRedirectTo: `${location.origin}/auth/callback`,
+        data: {
+          full_name: formData.fullName,
+        },
       },
     });
     if (error) {
@@ -62,15 +62,6 @@ const Signup = () => {
         msg: error.message,
       });
       console.log("error msg", error);
-    } else {
-      setUser(data);
-      console.log("userData", data);
-      const { data: profileUpdate, error } = await supabase
-        .from("profiles")
-        .update("username")
-        .eq("id", user.id);
-      console.log("error", error);
-      console.log("data", profileUpdate);
     }
   };
 
