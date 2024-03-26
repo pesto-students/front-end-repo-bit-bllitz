@@ -2,11 +2,19 @@
 import CustomInput from "@/components/auth/input/CustomInput";
 import Sidebar from "@/components/auth/sidebar/Sidebar";
 import CustomButton from "@/components/button/CustomButton";
-import { Snackbar, Typography } from "@mui/material";
+import {
+  FormControl,
+  FormControlLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Snackbar,
+  TextField,
+  Typography,
+} from "@mui/material";
 import styles from "../auth.module.scss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
 import { supabase } from "../../../supabase/supabase";
 import { useRouter } from "next/navigation";
@@ -16,20 +24,23 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    role: "",
     password: "",
     confirmPassword: "",
   });
   const [user, setUser] = useState(undefined);
   const [toast, setToast] = useState({ visible: false, msg: " " });
-  const userData = useSelector((state) => state.user);
-  const dispatch = useDispatch();
   const handleUserData = (e) => {
     const { name, value } = e.target;
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
+  useEffect(() => {
+    console.log("formdata", formData);
+  }, [formData]);
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -54,23 +65,22 @@ const Signup = () => {
       password: formData.password,
       options: {
         emailRedirectTo: `${location.origin}/auth/callback`,
+        data: {
+          full_name: formData.fullName,
+          role: formData.role,
+        },
       },
     });
+    if (data.user) {
+      setUser(data);
+    }
+    console.log("signup data", data);
     if (error) {
       setToast({
         visible: true,
         msg: error.message,
       });
       console.log("error msg", error);
-    } else {
-      setUser(data);
-      console.log("userData", data);
-      const { data: profileUpdate, error } = await supabase
-        .from("profiles")
-        .update("username")
-        .eq("id", user.id);
-      console.log("error", error);
-      console.log("data", profileUpdate);
     }
   };
 
@@ -87,18 +97,43 @@ const Signup = () => {
         linkText={user ? "" : "Go to Login"}
         navigateLink={"/auth/signin"}
       >
+        <FormControl className={styles.genderContainer}>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="role"
+            className={styles.row}
+            value={formData.gender}
+            onChange={handleUserData}
+          >
+            <FormControlLabel
+              value={"Manager"}
+              control={<Radio />}
+              label="Manager"
+              className={styles.gender}
+            />
+            <FormControlLabel
+              value={"Waiter"}
+              className={styles.gender}
+              control={<Radio />}
+              label="Waiter"
+            />
+          </RadioGroup>
+        </FormControl>
         <CustomInput
           placeholder={"Fullname"}
           onChange={handleUserData}
           inputName={"fullName"}
           type={"text"}
         />
+
         <CustomInput
           placeholder={"Email"}
           onChange={handleUserData}
           inputName={"email"}
           type={"email"}
         />
+
         <CustomInput
           placeholder={"Password"}
           onChange={handleUserData}

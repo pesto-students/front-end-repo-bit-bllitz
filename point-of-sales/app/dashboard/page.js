@@ -31,9 +31,9 @@ import {
 import { Doughnut, Line } from "react-chartjs-2";
 import LinearProgressComponent from "@/components/linearProgress/LinearProgress";
 import { supabase } from "../../supabase/supabase";
-import { useDispatch } from "react-redux";
-import { setUserData } from "@/lib/redux/slices/userSlice";
 import { Circle } from "@mui/icons-material";
+import { useAppContext } from "@/context";
+import { useRouter } from "next/navigation";
 // Register ChartJS components using ChartJS.register
 ChartJS.register(
   CategoryScale,
@@ -47,29 +47,18 @@ ChartJS.register(
 const Dashboard = () => {
   const [value, setValue] = useState("1");
   const [totalOrdersCount, setTotalOrdersCount] = useState(0);
-  const dispatch = useDispatch();
-
+  const router = useRouter();
+  const { setUser } = useAppContext();
   useEffect(() => {
     const fetchSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      console.log("session", session);
-      dispatch(
-        setUserData({
-          accessToken: session.access_token,
-          expiresAt: session.expires_at,
-          expiresIn: session.expires_in,
-          refreshToken: session.refresh_token,
-          metadata: {
-            email: session.user.email,
-            userId: session.user.id,
-            sessionId: session.user.session_id,
-          },
-        })
-      );
+      const { data, error } = await supabase.auth.getSession();
+      console.log("dashboard data", data);
+      if (data.session == null) {
+        router.push("/auth/signin");
+      } else {
+        setUser(data);
+      }
     };
-
     fetchSession();
   }, []);
   const handleChange = (event) => {

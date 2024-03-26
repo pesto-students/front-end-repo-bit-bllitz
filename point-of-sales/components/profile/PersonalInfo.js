@@ -1,28 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../app/profile/profile.module.scss";
 import {
   FormControl,
   FormControlLabel,
   Grid,
+  Input,
   Radio,
   RadioGroup,
+  Slide,
+  Snackbar,
   Typography,
 } from "@mui/material";
 import CustomInput from "../auth/input/CustomInput";
 import CustomButton from "../button/CustomButton";
 import { supabase } from "../../supabase/supabase";
-const PersonalInfo = ({userEmail}) => {
-  
-  const [formData, setFormData] = useState({
-    gender: "", // Initialize gender as an empty string
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone_number: "",
-    date_of_birth: "",
-    city: "",
-    pincode: "",
+import { useAppContext } from "@/context";
+const PersonalInfo = ({ formData,setFormData }) => {
+  const [toast, setToast] = useState({
+    msg: "",
+    visible: false,
   });
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     console.log(name, value, "nameval");
@@ -34,25 +32,39 @@ const PersonalInfo = ({userEmail}) => {
 
   const handleSaveInfo = async () => {
     try {
-      const response = await fetch("/api/profile", {
+      const payload = {
+        ...formData,
+        fullname: formData.first_name + " " + formData.last_name,
+      };
+      const { first_name, last_name, ...newPayload } = payload;
+      const response = await fetch(`/api/profile/${userId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(newPayload),
       });
 
       if (!response.ok) {
         throw new Error("Failed to update profile");
       }
+      const responseData = await response.json(); // Parse response body as JSON
 
-      console.log("Profile updated successfully:", response);
-      return response;
+      console.log("Profile updated successfully:", responseData);
+      if (responseData?.success) {
+        setToast({
+          msg: "Profile updated successfully!",
+          visible: true,
+        });
+      }
+      return responseData;
     } catch (error) {
       console.error("Error updating profile:", error);
+      setToast({
+        msg: "Failed to update Profile, PLease try again later!",
+        visible: true,
+      });
     }
-    // Handle saving form data here
-    // Just logging for now, you can implement saving logic
   };
   return (
     <div>
@@ -69,15 +81,17 @@ const PersonalInfo = ({userEmail}) => {
           onChange={handleChange}
         >
           <FormControlLabel
-            value="female"
+            value={"Female"}
             control={<Radio />}
             label="Female"
+            defaultValue={formData.gender == 'Female'}
             className={styles.gender}
           />
           <FormControlLabel
-            value="male"
+            value={"Male"}
             className={styles.gender}
             control={<Radio />}
+            defaultValue={formData.gender == 'Male'}
             label="Male"
           />
         </RadioGroup>
@@ -90,6 +104,7 @@ const PersonalInfo = ({userEmail}) => {
             height={"2rem"}
             placeholder={"Firstname"}
             type={"text"}
+            value={formData.first_name}
             onChange={handleChange}
           />
         </Grid>
@@ -103,6 +118,7 @@ const PersonalInfo = ({userEmail}) => {
             inputName={"last_name"}
             placeholder={"Lastname"}
             onChange={handleChange}
+            value={formData.last_name}
           />
         </Grid>
       </Grid>
@@ -115,7 +131,7 @@ const PersonalInfo = ({userEmail}) => {
           onChange={handleChange}
           type={"email"}
           inputName={"email"}
-          value={userEmail}
+          value={formData.email}
         />
       </Grid>
       <Grid container>
@@ -128,6 +144,7 @@ const PersonalInfo = ({userEmail}) => {
             onChange={handleChange}
             type={"tel"}
             inputName={"phone_number"}
+            value={formData.phone_number}
           />
         </Grid>
         <Grid item md={0.4} />
@@ -140,6 +157,7 @@ const PersonalInfo = ({userEmail}) => {
             type={"date"}
             inputName={"date_of_birth"}
             onChange={handleChange}
+            value={formData.date_of_birth}
           />
         </Grid>
       </Grid>
@@ -150,8 +168,9 @@ const PersonalInfo = ({userEmail}) => {
           <CustomInput
             height={"2rem"}
             inputName={"city"}
-            placeholder={"Location"}
+            placeholder={"City"}
             onChange={handleChange}
+            value={formData.city}
           />
         </Grid>
         <Grid item md={0.4} />
@@ -164,10 +183,18 @@ const PersonalInfo = ({userEmail}) => {
             onChange={handleChange}
             inputName={"pincode"}
             type={"number"}
+            value={formData.pincode}
           />
         </Grid>
       </Grid>
       <CustomButton text={"Save Changes"} onClick={handleSaveInfo} />
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={toast.visible}
+        onClose={() => setToast({ visible: false, msg: "" })}
+        message={toast.msg}
+        autoHideDuration={2000}
+      />
     </div>
   );
 };

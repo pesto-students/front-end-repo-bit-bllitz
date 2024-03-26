@@ -15,13 +15,10 @@ import { Dashboard, Fastfood, Receipt, Settings } from "@mui/icons-material";
 import styles from "./Sidepanel.module.scss";
 import Logo from "../logo/Logo";
 import CustomButton from "../button/CustomButton";
-import { useDispatch, useSelector } from "react-redux";
 import { setSelectedTab } from "@/lib/redux/slices/sidePanelSlice";
 
-const SidePanel = ({ style }) => {
-  const dispatch = useDispatch();
+const demo = ({ style }) => {
   const router = useRouter();
-  const sidePanel = useSelector((state) => state.sidePanel);
   console.log("sidePanel", sidePanel);
   const items = [
     {
@@ -85,4 +82,4 @@ const SidePanel = ({ style }) => {
   );
 };
 
-export default SidePanel;
+export default demo;
