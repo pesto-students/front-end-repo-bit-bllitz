@@ -9,7 +9,8 @@ const CustomInput = ({
   onChange,
   inputName,
   height,
-  type
+  type,
+  disabled
 }) => {
   return (
     <div style={{ width: "100%" }}>
@@ -23,6 +24,7 @@ const CustomInput = ({
         fullWidth
         disableUnderline
         className={styles.customInput}
+        disabled={disabled}
         name={inputName}
         sx={{ height: height && `${height} !important` }}
       />

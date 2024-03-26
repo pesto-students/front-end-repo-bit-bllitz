@@ -48,12 +48,15 @@ const Dashboard = () => {
   const [value, setValue] = useState("1");
   const [totalOrdersCount, setTotalOrdersCount] = useState(0);
   const router = useRouter();
+  const { setUser } = useAppContext();
   useEffect(() => {
     const fetchSession = async () => {
       const { data, error } = await supabase.auth.getSession();
       console.log("dashboard data", data);
-      if (data.session.user == null) {
+      if (data.session == null) {
         router.push("/auth/signin");
+      } else {
+        setUser(data);
       }
     };
     fetchSession();

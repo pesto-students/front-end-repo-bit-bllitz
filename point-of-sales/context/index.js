@@ -17,29 +17,34 @@ export function AppWrapper({ children }) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
   //fetchUser when the app launches
+  useEffect(() => {
+    console.log("user in context effect", user);
+  }, [user]);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         setLoading(true);
+
         const { data } = await supabase.auth.getSession();
-        console.log("userData in context", data.session);
-        if (!data.session) {
-          setUser(data);
+        console.log("user in context", data);
+        if (data.session == null) {
+          console.log("There is no session");
         }
-      } catch (error) {
-        console.log("error");
+        if (data) {
+          setUser(data.session.user);
+        }
+      } catch (e) {
+        // Handle error
       } finally {
         setLoading(false);
       }
     };
+
     fetchCurrentUser();
   }, []);
 
-  if (loading) {
-    return <div>Loading.....</div>;
-  }
-
+  if (loading && !user) return <div>Loading...</div>;
   return (
     <AppContext.Provider
       // get these values in the whole app
@@ -51,7 +56,7 @@ export function AppWrapper({ children }) {
     >
       {/* children is displayed in every page */}
       <main>
-        {user?.id && <Sidepanel />}
+        {user?.session && <Sidepanel />}
         <div style={{ width: "100%", height: "100%" }}>{children}</div>
       </main>
     </AppContext.Provider>

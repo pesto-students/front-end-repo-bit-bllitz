@@ -18,12 +18,11 @@ const Signin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-  const { setUser, user } = useAppContext();
   useEffect(() => {
     const fetchSession = async () => {
       const signinSession = await supabase.auth.getSession();
       console.log("signing data", signinSession);
-      if (data.session == null) {
+      if (signinSession?.data?.session) {
         console.log("signin if block");
         router.push("/dashboard");
       }
@@ -45,13 +44,13 @@ const Signin = () => {
           password,
         });
       if (error) return setError("Sorry! something went wrong.");
-      if (dataSupabase) setLoading(false);
+      console.log("data in signin supabase", dataSupabase);
+      // if (dataSupabase) setLoading(false);
       if (dataSupabase) {
-        const { user, session } = dataSupabase;
-        setUser(user);
-
         router.refresh();
         router.push("/dashboard");
+        const { user, session } = dataSupabase;
+        console.log("user in signin supabase", user);
       }
     } catch (error) {
       console.log(error.message);

@@ -18,10 +18,24 @@ const drawerWidth = 240;
 
 export default function Sidepanel() {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { user } = useAppContext();
-  console.log("user in sidepanel", user);
+  const [profileData, setProfile] = useState({});
   const router = useRouter();
-
+  const { user } = useAppContext();
+  console.log("user in sidepanel");
+  const userId = user.session?.user?.id;
+  const getProfileDetails = async () => {
+    let { data: profiles, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId);
+    setProfile(profiles[0]);
+    console.log("profile data in sidepanel", profiles[0]);
+  };
+  useEffect(() => {
+    if (user) {
+      getProfileDetails();
+    }
+  }, [user]);
   const menuData = [
     {
       href: "/dashboard",
@@ -86,11 +100,10 @@ export default function Sidepanel() {
                   Z
                 </Avatar>
                 <Typography variant="h6" className={styles.profileName}>
-                  Riya Pathak
+                  {profileData.fullname}
                 </Typography>
                 <Typography variant="body2" className={styles.desig}>
-                  Waiter
-                  {user && user.email}
+                  {profileData.role}
                 </Typography>
                 <Button onClick={handleProfile} className={styles.profileBtn}>
                   Show Profile

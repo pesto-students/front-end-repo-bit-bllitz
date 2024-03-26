@@ -18,28 +18,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ReportIcon from "@mui/icons-material/Report";
 import PersonalInfo from "@/components/profile/PersonalInfo";
 import UserLoginData from "@/components/profile/UserLoginData";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../supabase/supabase";
-import { setUserData } from "@/lib/redux/slices/userSlice";
 import Progress from "@/components/progress/Progress";
 import { useAppContext } from "@/context";
-import { NextResponse } from "next/server";
 const page = () => {
-  const [userData, setUserData] = useState({});
-
-  const getUserData = async () => {
-    const { data: userData, error } = await supabase.auth.getUser();
-    console.log("userData", userData);
-    if (userData.user) {
-      const profile = userData.user.email;
-    }
-  };
-  useEffect(() => {
-    getUserData();
-  }, []);
-  const {
-    data: { user: { email: userEmail = "", id: userId = "" } = {} } = {},
-  } = userData;
   const style = {
     position: "absolute",
     top: "50%",
@@ -55,8 +38,48 @@ const page = () => {
     justifyContent: "center",
     borderRadius: 3,
   };
-  const [selectedIndex, setSelectedIndex] = useState(1);
+  const { setUser } = useAppContext();
   const router = useRouter();
+  const [profileData, setProfileData] = useState({
+    profileInfo: {},
+    userId: "",
+  });
+  const [selectedIndex, setSelectedIndex] = useState(1);
+  const [formData, setFormData] = useState({
+    gender: "", // Initialize gender as an empty string
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+    date_of_birth: "",
+    city: "",
+    pincode: "",
+  });
+  const getUserData = async () => {
+    setLoading(true)
+    const { data: userData, error } = await supabase.auth.getSession();
+    setUser(userData);
+    console.log("userData in profile", userData);
+    if (userData.session) {
+      const userId = userData.session.user.id;
+      const { data: profileFromId, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId);
+
+      if (error) console.log("profilesErr", error);
+      console.log("profilesData", profileFromId[0]);
+      const fullname = profileFromId[0]?.fullname;
+      const [first_name, last_name] = fullname ? fullname.split(" ") : ["", ""]; // Split fullname into first_name and last_name
+      setFormData({ ...profileFromId[0], first_name, last_name });
+      setLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
   const handleListItemClick = async (event, index) => {
     setSelectedIndex(index);
     switch (index) {
@@ -66,6 +89,7 @@ const page = () => {
         console.log("signout res", signoutRes);
         router.refresh();
         router.push("/auth/signin");
+        setUser(undefined);
         setLoading(false);
         break;
 
@@ -83,9 +107,9 @@ const page = () => {
   const getContent = () => {
     switch (selectedIndex) {
       case 1:
-        return <PersonalInfo userEmail={userEmail} />;
+        return <PersonalInfo formData={formData} setFormData={setFormData} />;
       case 2:
-        return <UserLoginData userEmail={userEmail} userId={userId} />;
+        return <UserLoginData formData={formData} setFormData={setFormData} />;
       case 3:
         return <Progress loading={loading} />;
       default:
@@ -125,10 +149,10 @@ const page = () => {
               Z
             </Avatar>
             <Typography variant="h6" className={styles.staffData}>
-              Riya Pathak
+              {formData.fullname}
             </Typography>
             <Typography variant="body2" className={styles.staffSub}>
-              Waiter
+              {formData.role}
             </Typography>
             <Grid container className={styles.workData}>
               <Grid item md={6} sm={6} xs={12} className={styles.income}>
