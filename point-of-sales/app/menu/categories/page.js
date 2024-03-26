@@ -3,40 +3,13 @@
 import React, { useState, useCallback, useEffect } from "react";
 import ActionAreaCard from "../../../components/card/ActionAreaCard.js";
 import styles from "../menu.module.scss";
-import { Typography, Modal, Box, Paper } from "@mui/material";
+import { Typography } from "@mui/material";
 import CustomModal from "@/components/modal/CustomModal.js";
 import CustomInput from "@/components/auth/input/CustomInput.js";
 import CustomButton from "@/components/button/CustomButton.js";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../supabase/supabase.js";
 
-const mockData = [
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Cold Drinks",
-    content: "",
-  },
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Burgers",
-    content: "",
-  },
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Pizza",
-    content: "",
-  },
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Desserts",
-    content: "",
-  },
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Pasta",
-    content: "",
-  },
-];
 const Categories = () => {
   const [openModal, setOpenModal] = useState(true);
   const { push } = useRouter();
@@ -45,7 +18,7 @@ const Categories = () => {
     totalGuests: "",
     assignedTable: "",
   });
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleUserData = (e) => {
     const { name, value } = e.target;
@@ -70,7 +43,6 @@ const Categories = () => {
         setCategories(category);
       }
     } catch (error) {
-      console.log('error',error)
       alert("Error loading user data!");
     } finally {
       setLoading(false);
@@ -82,7 +54,6 @@ const Categories = () => {
   }, []);
 
   const onClickHandle = (category) => {
-    console.log('category',category)
     push(`/menu/categories/subCategories?category_id=${category.id}`);
   };
 

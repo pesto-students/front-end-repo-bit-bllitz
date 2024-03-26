@@ -1,7 +1,8 @@
 .menu {
     display: grid;
-    grid-template-columns: auto auto auto;
-    gap: 24px 24px;
+    row-gap: 16px;
+    column-gap: 16px;
+    grid-template-columns: auto auto auto ;
 }
 
 .image {
