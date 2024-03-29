@@ -8,59 +8,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image.js";
 import CustomButton from "@/components/button/CustomButton.js";
 import { supabase } from "../../../../supabase/supabase.js";
-<<<<<<< Updated upstream
-=======
-import { store } from "@/lib/redux/store.js"; // Import your Redux store
-import { addToCart } from "@/lib/redux/slices/cartSlice.js"; 
->>>>>>> Stashed changes
+import addToCart from "../../../api/cart/addtoCart.js";
 
-const mockData = [
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Paneer Pizza",
-    content: "",
-    metaData: {
-      quantity: "650 gm",
-      price: "450 Rs",
-    },
-  },
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Veg Farm",
-    content: "",
-    metaData: {
-      quantity: "650 gm",
-      price: "450 Rs",
-    },
-  },
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Chicken Farm",
-    content: "",
-    metaData: {
-      quantity: "650 gm",
-      price: "450 Rs",
-    },
-  },
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Onion Tomato Pizza",
-    content: "",
-    metaData: {
-      quantity: "650 gm",
-      price: "450 Rs",
-    },
-  },
-  {
-    uri: "/images/veg_pizza.jpg",
-    title: "Paneer Pizza",
-    content: "",
-    metaData: {
-      quantity: "650 gm",
-      price: "450 Rs",
-    },
-  },
-];
 const SubCategories = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const searchParams = useSearchParams();
@@ -68,12 +17,12 @@ const SubCategories = () => {
   const [foodData, setFoodData] = useState({
     image_url: "",
     name: "",
-      quantity: "",
-      price: "",
+    quantity: "",
+    price: "",
   });
   const { push } = useRouter();
   const [foodItems, setFoodItems] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const getFoodItems = useCallback(async () => {
     try {
@@ -91,7 +40,6 @@ const SubCategories = () => {
         setFoodItems(data);
       }
     } catch (error) {
-      console.log("error", error);
       alert("Error loading user data!");
     } finally {
       setLoading(false);
@@ -116,6 +64,13 @@ const SubCategories = () => {
   const onClickHandle = (data) => {
     setFoodData(data);
     setOpenDrawer(true);
+  };
+
+  const onApplyAddToCart = () => {
+    addToCart(foodData)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err))
+      .finally(() => setOpenDrawer(false));
   };
 
 <<<<<<< Updated upstream
@@ -144,7 +99,7 @@ const SubCategories = () => {
             unoptimized
             className={styles.image}
             src={foodData.image_url}
-            alt={'food_image'}
+            alt={"food_image"}
             width={200}
             height={180}
           />
@@ -158,7 +113,7 @@ const SubCategories = () => {
             {foodData.price}
           </Typography>
           <div className={styles.applyButton}>
-            <CustomButton text={"Apply"} onClick={() => setOpenDrawer(false)} />
+            <CustomButton text={"Apply"} onClick={onApplyAddToCart} />
           </div>
         </div>
       </Drawer>
