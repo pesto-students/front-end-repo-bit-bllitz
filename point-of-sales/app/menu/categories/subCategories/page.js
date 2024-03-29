@@ -8,6 +8,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image.js";
 import CustomButton from "@/components/button/CustomButton.js";
 import { supabase } from "../../../../supabase/supabase.js";
+<<<<<<< Updated upstream
+=======
+import { store } from "@/lib/redux/store.js"; // Import your Redux store
+import { addToCart } from "@/lib/redux/slices/cartSlice.js"; 
+>>>>>>> Stashed changes
 
 const mockData = [
   {
@@ -113,6 +118,18 @@ const SubCategories = () => {
     setOpenDrawer(true);
   };
 
+<<<<<<< Updated upstream
+=======
+  const onApplyAddToCart = () => {
+    try {
+      // Dispatch action to add item to cart
+      store.dispatch(addToCart(item));
+    } catch (error) {
+     console.log(error)
+    }
+  };
+
+>>>>>>> Stashed changes
   return (
     <>
       <Typography>Food Items</Typography>
