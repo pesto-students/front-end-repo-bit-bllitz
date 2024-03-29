@@ -67,24 +67,14 @@ const SubCategories = () => {
   };
 
   const onApplyAddToCart = () => {
-    addToCart(foodData)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err))
-      .finally(() => setOpenDrawer(false));
-  };
-
-<<<<<<< Updated upstream
-=======
-  const onApplyAddToCart = () => {
     try {
       // Dispatch action to add item to cart
       store.dispatch(addToCart(item));
     } catch (error) {
-     console.log(error)
+      console.log(error);
     }
   };
 
->>>>>>> Stashed changes
   return (
     <>
       <Typography>Food Items</Typography>

@@ -1,3 +1,4 @@
+import { selectCartItems } from "@/lib/redux/selectors/cardSelector";
 import { supabase } from "../../../supabase/supabase"
 import { generateOrder } from "@/lib/redux/slices/orderSlice";
 import { store } from "@/lib/redux/store";
