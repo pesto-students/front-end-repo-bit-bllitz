@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image.js";
 import CustomButton from "@/components/button/CustomButton.js";
 import { supabase } from "../../../../supabase/supabase.js";
-import addToCart from "../../../api/cart/addtoCart.js";
+import { addToCart } from "@/lib/redux/slices/cartSlice.js";
 
 const SubCategories = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
