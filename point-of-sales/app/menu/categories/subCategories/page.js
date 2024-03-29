@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image.js";
 import CustomButton from "@/components/button/CustomButton.js";
 import { supabase } from "../../../../supabase/supabase.js";
-import addToCart from "../../../api/cart/addtoCart.js";
+import { addToCart } from "@/lib/redux/slices/cartSlice.js";
 
 const SubCategories = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -73,6 +73,18 @@ const SubCategories = () => {
       .finally(() => setOpenDrawer(false));
   };
 
+<<<<<<< Updated upstream
+=======
+  const onApplyAddToCart = () => {
+    try {
+      // Dispatch action to add item to cart
+      store.dispatch(addToCart(item));
+    } catch (error) {
+     console.log(error)
+    }
+  };
+
+>>>>>>> Stashed changes
   return (
     <>
       <Typography>Food Items</Typography>
