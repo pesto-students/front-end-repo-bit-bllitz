@@ -89,7 +89,6 @@
 
 // export default Bills;
 // Import necessary dependencies
-import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -147,7 +146,6 @@ const currentOrderDetails = {
     },
   ],
 };
-import { supabase } from "../../supabase/supabase";
 
 const Bills = () => {
   return (
