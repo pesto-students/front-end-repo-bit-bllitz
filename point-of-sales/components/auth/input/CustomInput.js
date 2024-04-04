@@ -7,7 +7,10 @@ const CustomInput = ({
   endAdornment,
   startAdornment,
   onChange,
-  inputName
+  inputName,
+  height,
+  type,
+  disabled
 }) => {
   return (
     <div style={{ width: "100%" }}>
@@ -16,11 +19,14 @@ const CustomInput = ({
         endAdornment={endAdornment}
         startAdornment={startAdornment}
         value={value}
+        type={type}
         onChange={onChange}
         fullWidth
         disableUnderline
         className={styles.customInput}
+        disabled={disabled}
         name={inputName}
+        sx={{ height: height && `${height} !important` }}
       />
     </div>
   );

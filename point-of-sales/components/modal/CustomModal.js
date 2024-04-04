@@ -2,9 +2,9 @@ import React from "react";
 import { Modal, Paper } from "@mui/material";
 import styles from "./CustomModal.module.scss";
 
-const CustomModal = ({ openModal, children }) => {
+const CustomModal = ({ openModal, onClose, children }) => {
   return (
-    <Modal open={openModal} onClose={() => {}}>
+    <Modal open={openModal} onClose={onClose}>
       <Paper className={styles.paper}>{children}</Paper>
     </Modal>
   );

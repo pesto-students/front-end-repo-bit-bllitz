@@ -1,26 +1,39 @@
 .analytics {
-  padding: 1rem;
-  .breadcrumbs {
-    margin-bottom: 2rem;
-  }
+  padding: 1rem 1rem 0;
+  
 }
 .header {
   display: flex;
   align-items: center;
+  padding: 0 0.5rem;
   .headerContent {
     .title {
       font-family: "Gilory-SemiBold" !important;
     }
   }
 }
-.tabs {
-  .tab {
-    text-transform: capitalize;
-   
+.filterContainer {
+  .selectField {
+    &:global(.mui-wb57ya-MuiFormControl-root-MuiTextField-root) {
+      border-radius: 0.5rem;
+    }
+    > div {
+      border-radius: 0.5rem;
+    }
+    > div > div {
+      padding: 0.5rem 0.8rem;
+      font-family: "Gilory-SemiBold";
+    }
+    .menu {
+      font-size: 0.8rem;
+    }
+    > li {
+      font-family: "Gilory-SemiBold";
+    }
   }
 }
 @mixin chartContainer {
-  height: 16rem;
+  height: 18rem;
   margin-top: 2rem;
   padding: 0.5rem;
 }
@@ -62,6 +75,20 @@
   @include chartContainer();
   .chartCard {
     @include chartCard();
+    .typeContainer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      .type {
+        display: flex;
+        align-items: center;
+        .icon {
+          font-size: 0.7rem;
+          margin-right: 0.4rem;
+        }
+      }
+    }
     .title {
       @include title;
     }
@@ -77,6 +104,8 @@
 }
 .progressChart {
   @include chartContainer();
+  margin-top: 0;
+  height: auto;
   .chartCard {
     @include chartCard();
     height: 7rem;
@@ -86,7 +115,6 @@
 
 .trending {
   @include chartContainer();
-  margin-top: 0.5rem;
   .chartCard {
     @include chartCard();
     .title {
@@ -105,14 +133,14 @@
     }
     .chart {
       @include chartCard();
-      overflow-y: auto;
+      overflow-y: hidden;
       overflow-x: hidden;
       &.chart::-webkit-scrollbar {
         display: none;
       }
       .trendingTable {
         width: 100%;
-        padding-top: 5.5rem;
+        // padding-top: 1rem;
         .details {
           display: flex;
           width: 100%;
@@ -120,15 +148,22 @@
           margin-top: 1rem;
           .itemDets {
             display: flex;
+            align-items: center;
+            .avatar {
+              object-fit: contain;
+            }
             .specs {
               display: flex;
               flex-direction: column;
               margin-left: 0.5rem;
               .chip {
                 max-width: 80% !important;
-                height: 1.5rem;
+                height: 1.3rem;
                 margin-bottom: 0.3rem;
-                border-radius: 0.4rem;
+                border-radius: 0.2rem;
+                background-color: #ffca40 !important;
+                color: #000;
+                font-family: "Gilory-SemiBold";
               }
               .item {
                 font-family: "Gilory-SemiBold";

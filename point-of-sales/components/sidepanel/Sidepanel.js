@@ -1,87 +1,118 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  Avatar,
-  Card,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-} from "@mui/material";
-import { Dashboard, Fastfood, Receipt, Settings } from "@mui/icons-material";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import { Dashboard, Fastfood, Receipt } from "@mui/icons-material";
 import styles from "./Sidepanel.module.scss";
+import { useRouter } from "next/navigation";
 import Logo from "../logo/Logo";
-import CustomButton from "../button/CustomButton";
-import { useDispatch, useSelector } from "react-redux";
-import { setSelectedTab } from "@/lib/redux/slices/sidePanelSlice";
+import { Avatar, Button, Card, Typography } from "@mui/material";
+import { supabase } from "../../supabase/supabase";
+import { useAppContext } from "@/context";
+const drawerWidth = 240;
 
-const SidePanel = ({ style }) => {
-  const dispatch = useDispatch();
+export default function Sidepanel() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [profileData, setProfile] = useState({});
   const router = useRouter();
-  const sidePanel = useSelector((state) => state.sidePanel);
-  console.log("sidePanel", sidePanel);
-  const items = [
-    {
-      href: "/dashboard",
-      icon: Dashboard,
-      primary: "Dashboard",
-    },
-    { href: "/menu/categories", icon: Fastfood, primary: "Food & Drinks" },
-    { href: "/bills", icon: Receipt, primary: "Bills" },
-    { href: "/settings", icon: Settings, primary: "Settings" },
-  ];
-
-  const [activeTab, setActiveTab] = useState(sidePanel.selectedTab);
-
-  const handleTabClick = (e, href) => {
-    e.preventDefault();
-    setActiveTab(href);
-    router.push(href);
-    dispatch(setSelectedTab(href));
+  const { user } = useAppContext();
+  console.log("user in sidepanel");
+  const userId = user.session?.user?.id;
+  const getProfileDetails = async () => {
+    let { data: profiles, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId);
+    setProfile(profiles[0]);
+    console.log("profile data in sidepanel", profiles[0]);
   };
   useEffect(() => {
-    console.log("active", activeTab);
-  }, [activeTab]);
+    if (user) {
+      getProfileDetails();
+    }
+  }, [user]);
+  const menuData = [
+    {
+      href: "/dashboard",
+      icon: <Dashboard />,
+      primary: "Dashboard",
+    },
+    { href: "/menu/categories", icon: <Fastfood />, primary: "Food & Drinks" },
+    { href: "/bills", icon: <Receipt />, primary: "Bills" },
+  ];
 
+  const handleRoute = (href, index) => {
+    setSelectedIndex(index);
+
+    router.push(href);
+    console.log("href", href);
+  };
+  const handleProfile = () => {
+    router.push("/profile");
+  };
   return (
-    <div className={styles.sidePanel}>
-      <Logo />
-      <List className={styles.navContainer}>
-        {items.map((item, index) => (
-          <ListItem
-            button
-            key={index}
-            component="a"
-            href={item.href}
-            className={`${styles.navTab} ${
-              activeTab === item.href ? styles.active : ""
-            }`}
-            onClick={(e) => handleTabClick(e, item.href)}
-          >
-            <ListItemIcon className={styles.icon}>
-              <item.icon />
-            </ListItemIcon>
-            <ListItemText primary={item.primary} />
-          </ListItem>
-        ))}
-      </List>
-      <Card className={styles.profile} elevation={10}>
-        <Avatar className={styles.avatar}>Z</Avatar>
-        <Typography variant="body1" className={styles.name}>
-          Theresa Web
-        </Typography>
-        <Typography variant="body2" className={styles.designation}>
-          Waiter
-        </Typography>
-        <div className={styles.profileBtn}>
-          <CustomButton text={"Open Profile"} />
-        </div>
-      </Card>
-    </div>
+    <Box sx={{ display: "flex" }}>
+      {/* <CssBaseline /> */}
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          height: "100%",
+          position: "relative",
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: "border-box",
+          },
+        }}
+      >
+        <Logo />
+        <Box className={styles.sidePanelContainer}>
+          <List className={styles.tabContainer}>
+            {menuData.map((text, index) => (
+              <ListItem key={text} disablePadding>
+                <ListItemButton
+                  onClick={() => handleRoute(text.href, index)}
+                  selected={selectedIndex === index}
+                  className={styles.tabBtn}
+                >
+                  <ListItemIcon className={styles.icon}>
+                    {text.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    className={styles.tabTxt}
+                    primary={text.primary}
+                    disableTypography
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          {user && (
+            <Box className={styles.profileSection}>
+              <Card elevation={2} className={styles.profileCard}>
+                <Avatar src={"/images/avatar.png"} className={styles.avatar}>
+                  Z
+                </Avatar>
+                <Typography variant="h6" className={styles.profileName}>
+                  {profileData.fullname}
+                </Typography>
+                <Typography variant="body2" className={styles.desig}>
+                  {profileData.role}
+                </Typography>
+                <Button onClick={handleProfile} className={styles.profileBtn}>
+                  Show Profile
+                </Button>
+              </Card>
+            </Box>
+          )}
+        </Box>
+      </Drawer>
+    </Box>
   );
-};
-
-export default SidePanel;
+}

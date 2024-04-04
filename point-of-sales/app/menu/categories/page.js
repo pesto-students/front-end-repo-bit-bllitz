@@ -65,7 +65,7 @@ const Categories = () => {
           <ActionAreaCard data={category} onClick={onClickHandle} />
         ))}
       </div>
-      <CustomModal openModal={openModal}>
+      <CustomModal openModal={openModal} onClose={()=>setOpenModal(false)}>
         <CustomInput
           placeholder={"Enter number of Guests"}
           onChange={handleUserData}

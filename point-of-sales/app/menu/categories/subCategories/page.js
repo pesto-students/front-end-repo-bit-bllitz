@@ -8,7 +8,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image.js";
 import CustomButton from "@/components/button/CustomButton.js";
 import { supabase } from "../../../../supabase/supabase.js";
-import addToCart from "../../../api/cart/addtoCart.js";
+import { addToCart } from "@/lib/redux/slices/cartSlice.js";
+import {store} from "@/lib/redux/store.js";
 
 const SubCategories = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -67,10 +68,12 @@ const SubCategories = () => {
   };
 
   const onApplyAddToCart = () => {
-    addToCart(foodData)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err))
-      .finally(() => setOpenDrawer(false));
+    try {
+      // Dispatch action to add item to cart
+      store.dispatch(addToCart(foodData));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

@@ -1,7 +1,20 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import styles from "./Dashboard.module.scss";
-import { Grid, Typography, Box, Tab, Card, Avatar, Chip } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Box,
+  Tab,
+  Card,
+  Avatar,
+  Chip,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  TextField,
+} from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
 import "chartjs-plugin-datalabels";
 
@@ -18,6 +31,9 @@ import {
 import { Doughnut, Line } from "react-chartjs-2";
 import LinearProgressComponent from "@/components/linearProgress/LinearProgress";
 import { supabase } from "../../supabase/supabase";
+import { Circle } from "@mui/icons-material";
+import { useAppContext } from "@/context";
+import { useRouter } from "next/navigation";
 // Register ChartJS components using ChartJS.register
 ChartJS.register(
   CategoryScale,
@@ -31,18 +47,30 @@ ChartJS.register(
 const Dashboard = () => {
   const [value, setValue] = useState("1");
   const [totalOrdersCount, setTotalOrdersCount] = useState(0);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const router = useRouter();
+  const { setUser } = useAppContext();
+  useEffect(() => {
+    const fetchSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      console.log("dashboard data", data);
+      if (data.session == null) {
+        router.push("/auth/signin");
+      } else {
+        setUser(data);
+      }
+    };
+    fetchSession();
+  }, []);
+  const handleChange = (event) => {
+    setValue(event.target.value);
   };
-  const getPercentageOfOrders=(data)=>{
-
-  }
+  const getPercentageOfOrders = (data) => {};
   const getTotalOrders = async () => {
     try {
       const totalOrders = await fetch("/api/orders");
       console.log("totalOrders", totalOrders.data);
-      const data=totalOrders.data
-      setOrders
+      const data = totalOrders.data;
+      setOrders;
     } catch (error) {
       console.error("Error fetching orders:", error.message);
     }
@@ -82,53 +110,67 @@ const Dashboard = () => {
     {
       id: 1,
       type: "food",
-      item: "Cheeseburger",
+      item: "Fried Wings",
       price: 67,
+      imge: "/images/chicken.png",
     },
     {
       id: 2,
       type: "food",
       item: "Cheeseburger",
       price: 67,
+      imge: "/images/burger.png",
     },
     {
       id: 3,
-      type: "food",
-      item: "Cheeseburger",
+      type: "drinks",
+      item: "Cold Cofee",
       price: 67,
+      imge: "/images/coffee.png",
+    },
+  ];
+  const filterData = [
+    {
+      value: "Yesterday",
     },
     {
-      id: 4,
-      type: "food",
-      item: "Cheeseburger",
-      price: 67,
+      value: "Today",
+    },
+    {
+      value: "Week",
+    },
+    {
+      value: "Month",
     },
   ];
 
   return (
     <div className={styles.analytics}>
-      <div className={styles.breadcrumbs}>Dashboard / Analytics</div>
       <Grid container className={styles.header}>
-        <Grid item xs={6} className={styles.headerContent}>
+        <Grid item xs={8} md={8} className={styles.headerContent}>
           <Typography variant="h5" className={styles.title}>
             Dashboard
           </Typography>
         </Grid>
-        <Grid item xs={6} className={styles.tabs}>
-          <TabContext value={value}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList
-                onChange={handleChange}
-                aria-label="lab API tabs example"
+        <Grid item md={1} />
+        <Grid item xs={4} md={3} className={styles.filterContainer}>
+          <TextField
+            id="outlined-select-currency"
+            select
+            fullWidth
+            defaultValue={filterData[0].value}
+            className={styles.selectField}
+          >
+            {filterData.map((option) => (
+              <MenuItem
+                className={styles.menu}
+                key={option.value}
+                value={option.value}
               >
-                <Tab label="Yesterday" value="1" className={styles.tab} />
-                <Tab label="Today" value="2" className={styles.tab} />
-                <Tab label="Week" value="3" className={styles.tab} />
-                <Tab label="Month" value="4" className={styles.tab} />
-                <Tab label="Year" value="5" className={styles.tab} />
-              </TabList>
-            </Box>
-          </TabContext>
+                {option.value}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
       </Grid>
       <Grid container>
@@ -165,17 +207,68 @@ const Dashboard = () => {
             </div>
           </Card>
         </Grid>
-        <Grid item xs={4} className={styles.doughnutChart}>
+        <Grid item xs={4} md={4} sm={12} className={styles.doughnutChart}>
           <Card elevation={2} className={styles.chartCard}>
-            <Typography variant="h6" className={styles.title}>
-              Total income
-            </Typography>
+            <div className={styles.typeContainer}>
+              <Typography variant="h6" className={styles.title}>
+                Total income
+              </Typography>
+              <div className={styles.type} style={{ marginRight: "0.8rem" }}>
+                <Circle sx={{ color: "#C8161D" }} className={styles.icon} />
+                <Typography variant="body2">Food</Typography>
+              </div>
+              <div className={styles.type}>
+                <Circle sx={{ color: "#FFCA40" }} className={styles.icon} />
+                <Typography variant="body2">Drinks</Typography>
+              </div>
+            </div>
             <div className={styles.chart}>
               <Doughnut data={doughnutData} title="doughnt" options={options} />
             </div>
           </Card>
         </Grid>
-        <Grid item xs={4} className={styles.progressChart}>
+        <Grid item xs={4} md={4} sm={12} className={styles.trending}>
+          <Card elevation={2} className={styles.chartCard}>
+            <Typography variant="h6" className={styles.title}>
+              Trending Dishes
+            </Typography>
+            <div className={styles.headContainer}>
+              <Typography variant="body2" className={styles.head}>
+                Dishes
+              </Typography>
+              <Typography variant="body2" className={styles.head}>
+                Orders
+              </Typography>
+            </div>
+            <div className={styles.chart}>
+              <div className={styles.trendingTable}>
+                {dummyData.map((item, i) => (
+                  <div className={styles.details}>
+                    <div className={styles.itemDets}>
+                      <Avatar
+                        className={styles.avatar}
+                        src={item.imge}
+                      ></Avatar>
+                      <div className={styles.specs}>
+                        <Chip
+                          label="Food"
+                          variant="contained"
+                          className={styles.chip}
+                          color={item.color}
+                        />
+                        <Typography variant="body2" className={styles.item}>
+                          {item.item}
+                        </Typography>
+                      </div>
+                    </div>
+                    <div className={styles.itemPrice}>₹36</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={12} sm={12} className={styles.progressChart}>
           <Card className={styles.chartCard}>
             <LinearProgressComponent
               title={"Total Orders"}
@@ -184,16 +277,8 @@ const Dashboard = () => {
               color={"#C8161D"}
             />
           </Card>
-          <Card className={styles.chartCard}>
-            <LinearProgressComponent
-              title={"New Customers"}
-              data={"256"}
-              progress={70}
-              color={"#FFD049"}
-            />
-          </Card>
         </Grid>
-        <Grid item xs={4} className={styles.trending}>
+        {/* <Grid item xs={4} className={styles.trending}>
           <Card elevation={2} className={styles.chartCard}>
             <Typography variant="h6" className={styles.title}>
               Trending Dishes
@@ -230,8 +315,8 @@ const Dashboard = () => {
               </div>
             </div>
           </Card>
-        </Grid>
-        <Grid item xs={4} className={styles.tableData}>
+        </Grid> */}
+        {/* <Grid item xs={4} className={styles.tableData}>
           <Card elevation={2} className={styles.chartCard}>
             <Typography variant="h6" className={styles.title}>
               Best Employees
@@ -265,7 +350,7 @@ const Dashboard = () => {
               </div>
             </div>
           </Card>
-        </Grid>
+        </Grid> */}
       </Grid>
     </div>
   );
