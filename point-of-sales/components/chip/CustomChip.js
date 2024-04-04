@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import styles from "./Chip.module.scss";
-const Chip = ({name, price}) => {
+import styles from "./CustomChip.module.scss";
+const CustomChip = ({name, price}) => {
   return (
     <Box className={styles.orderChip}>
       <Typography className={styles.foodItem}>{name}</Typography>
@@ -10,4 +10,4 @@ const Chip = ({name, price}) => {
   );
 };
 
-export default Chip;
+export default CustomChip;
