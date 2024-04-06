@@ -11,17 +11,19 @@ import { Dashboard, Fastfood, Receipt } from "@mui/icons-material";
 import styles from "./Sidepanel.module.scss";
 import { useRouter } from "next/navigation";
 import Logo from "../logo/Logo";
-import { Avatar, Button, Card, Typography } from "@mui/material";
+import { Avatar, Badge, Button, Card, Typography } from "@mui/material";
 import { supabase } from "../../supabase/supabase";
 import { useAppContext } from "@/context";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useSelector } from "react-redux";
 const drawerWidth = 240;
 
 export default function Sidepanel() {
+  const cart=useSelector((state)=>state.cart.items)
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [profileData, setProfile] = useState({});
   const router = useRouter();
   const { user } = useAppContext();
-  console.log("user in sidepanel");
   const userId = user.session?.user?.id;
   const getProfileDetails = async () => {
     let { data: profiles, error } = await supabase
@@ -44,6 +46,7 @@ export default function Sidepanel() {
     },
     { href: "/menu/categories", icon: <Fastfood />, primary: "Food & Drinks" },
     { href: "/bills", icon: <Receipt />, primary: "Bills" },
+    { href: "/cart", icon: <ShoppingCartIcon />, primary: "Cart" },
   ];
 
   const handleRoute = (href, index) => {
@@ -81,9 +84,22 @@ export default function Sidepanel() {
                   selected={selectedIndex === index}
                   className={styles.tabBtn}
                 >
-                  <ListItemIcon className={styles.icon}>
-                    {text.icon}
-                  </ListItemIcon>
+                  {text.href == "/cart" ? (
+                    <ListItemIcon className={styles.icon}>
+                      <Badge
+                        badgeContent={cart.length}
+                        color={"primary"}
+                        className={styles.badge}
+                      >
+                        {text.icon}
+                      </Badge>
+                    </ListItemIcon>
+                  ) : (
+                    <ListItemIcon className={styles.icon}>
+                      {text.icon}
+                    </ListItemIcon>
+                  )}
+
                   <ListItemText
                     className={styles.tabTxt}
                     primary={text.primary}

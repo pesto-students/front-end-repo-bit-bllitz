@@ -9,7 +9,6 @@ import styles from "../auth.module.scss";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { supabase } from "../../../supabase/supabase";
-import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 
 const Signin = () => {

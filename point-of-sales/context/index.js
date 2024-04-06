@@ -2,7 +2,12 @@
 
 import Sidebar from "@/components/auth/sidebar/Sidebar";
 import Sidepanel from "@/components/sidepanel/Sidepanel";
+import { Providers } from "@/lib/redux/Provider";
+import { store } from "@/lib/redux/store";
 import { createClient } from "@supabase/supabase-js";
+import { Provider } from "react-redux";
+import { persistStore } from "redux-persist";
+import { PersistGate } from "redux-persist/integration/react";
 
 const { createContext, useState, useContext, useEffect } = require("react");
 
@@ -45,6 +50,8 @@ export function AppWrapper({ children }) {
   }, []);
 
   if (loading && !user) return <div>Loading...</div>;
+  const persistor = persistStore(store);
+
   return (
     <AppContext.Provider
       // get these values in the whole app
@@ -54,11 +61,13 @@ export function AppWrapper({ children }) {
         setUser,
       }}
     >
+      <Providers store={store}>
+          <main>
+            {user?.session && <Sidepanel />}
+            <div style={{ width: "100%", height: "100%" }}>{children}</div>
+          </main>
+      </Providers>
       {/* children is displayed in every page */}
-      <main>
-        {user?.session && <Sidepanel />}
-        <div style={{ width: "100%", height: "100%" }}>{children}</div>
-      </main>
     </AppContext.Provider>
   );
 }

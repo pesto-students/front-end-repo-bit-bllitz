@@ -80,6 +80,10 @@
       }
       .icon {
         color: #000;
+       >span>span{
+        background-color: #c3040a ;
+        font-family: 'Gilory-SemiBold';
+       }
       }
       .tabTxt {
         font-size: 1rem;

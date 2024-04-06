@@ -3,15 +3,17 @@
 import React, { useState, useCallback, useEffect } from "react";
 import ActionAreaCard from "../../../components/card/ActionAreaCard.js";
 import styles from "../menu.module.scss";
-import { Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import CustomModal from "@/components/modal/CustomModal.js";
 import CustomInput from "@/components/auth/input/CustomInput.js";
 import CustomButton from "@/components/button/CustomButton.js";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../supabase/supabase.js";
+import { useAppContext } from "@/context/index.js";
+import Header from "@/components/header/Header.js";
 
 const Categories = () => {
-  const [openModal, setOpenModal] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
   const { push } = useRouter();
   const [categories, setCategories] = useState([]);
   const [values, setValues] = useState({
@@ -56,16 +58,30 @@ const Categories = () => {
   const onClickHandle = (category) => {
     push(`/menu/categories/subCategories?category_id=${category.id}`);
   };
-
+  const { setUser } = useAppContext();
+  useEffect(() => {
+    const fetchSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      console.log("categories data", data);
+      if (data.session == null) {
+        router.push("/auth/signin");
+      } else {
+        setUser(data);
+      }
+    };
+    fetchSession();
+  }, []);
   return (
     <>
-      <Typography>Categories</Typography>
-      <div className={styles.menu}>
+      <Header padding={'1rem 2.5rem'} title={'Categories'}/>
+      <Grid container className={styles.menu}>
         {categories.map((category) => (
-          <ActionAreaCard data={category} onClick={onClickHandle} />
+          <Grid item md={3} className={styles.categories}>
+            <ActionAreaCard data={category} onClick={onClickHandle} />
+          </Grid>
         ))}
-      </div>
-      <CustomModal openModal={openModal} onClose={()=>setOpenModal(false)}>
+      </Grid>
+      <CustomModal openModal={openModal} onClose={() => setOpenModal(false)}>
         <CustomInput
           placeholder={"Enter number of Guests"}
           onChange={handleUserData}
