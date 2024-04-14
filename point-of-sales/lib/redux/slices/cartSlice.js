@@ -23,6 +23,7 @@ const cartSlice = createSlice({
         state.items.push(newItem);
       }
     },
+
     increaseQuantity(state, action) {
       console.log("action increase", action.payload);
       const itemIdToIncrease = action.payload;
@@ -31,18 +32,18 @@ const cartSlice = createSlice({
       );
       if (itemToIncrease) {
         itemToIncrease.quantity += 1;
+        itemToIncrease.amount = itemToIncrease.price * itemToIncrease.quantity;
       }
     },
     decreaseQuantity(state, action) {
-      console.log("action decrease", action.payload);
-
       const itemIdToDecrease = action.payload;
       const itemToDecrease = state.items.find(
         (item) => item.id === itemIdToDecrease
       );
       if (itemToDecrease && itemToDecrease.quantity > 1) {
         itemToDecrease.quantity -= 1;
-      }
+        itemToDecrease.amount = itemToDecrease.price * itemToDecrease.quantity;
+      } 
     },
     removeItem(state, action) {
       const itemIdToRemove = action.payload;

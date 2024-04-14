@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../../supabase/supabase.js";
 import { useAppContext } from "@/context/index.js";
 import Header from "@/components/header/Header.js";
+import { useDispatch } from "react-redux";
+import { setSubcategory } from "@/lib/redux/slices/sidePanelSlice.js";
 
 const Categories = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -54,8 +56,10 @@ const Categories = () => {
   useEffect(() => {
     getCategories();
   }, []);
+  const dispatch = useDispatch();
 
   const onClickHandle = (category) => {
+    dispatch(setSubcategory(category.name));
     push(`/menu/categories/subCategories?category_id=${category.id}`);
   };
   const { setUser } = useAppContext();
@@ -73,7 +77,7 @@ const Categories = () => {
   }, []);
   return (
     <>
-      <Header padding={'1rem 2.5rem'} title={'Categories'}/>
+      <Header padding={"1rem 2.5rem"} title={"Categories"} />
       <Grid container className={styles.menu}>
         {categories.map((category) => (
           <Grid item md={3} className={styles.categories}>

@@ -15,12 +15,14 @@ import { Avatar, Badge, Button, Card, Typography } from "@mui/material";
 import { supabase } from "../../supabase/supabase";
 import { useAppContext } from "@/context";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedTab } from "@/lib/redux/slices/sidePanelSlice";
 const drawerWidth = 240;
 
 export default function Sidepanel() {
-  const cart=useSelector((state)=>state.cart.items)
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const cart = useSelector((state) => state.cart.items);
+  const panel = useSelector((state) => state.sidePanel.selectedTab);
+  const [selectedIndex, setSelectedIndex] = useState(panel);
   const [profileData, setProfile] = useState({});
   const router = useRouter();
   const { user } = useAppContext();
@@ -48,10 +50,10 @@ export default function Sidepanel() {
     { href: "/bills", icon: <Receipt />, primary: "Bills" },
     { href: "/cart", icon: <ShoppingCartIcon />, primary: "Cart" },
   ];
-
+  const dispatch = useDispatch();
   const handleRoute = (href, index) => {
+    dispatch(setSelectedTab(index));
     setSelectedIndex(index);
-
     router.push(href);
     console.log("href", href);
   };
@@ -74,7 +76,7 @@ export default function Sidepanel() {
           },
         }}
       >
-        <Logo />
+        <Logo font={"1.2rem"} />
         <Box className={styles.sidePanelContainer}>
           <List className={styles.tabContainer}>
             {menuData.map((text, index) => (

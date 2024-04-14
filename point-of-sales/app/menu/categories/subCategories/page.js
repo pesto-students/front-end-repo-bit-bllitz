@@ -16,7 +16,7 @@ import Image from "next/image.js";
 import CustomButton from "@/components/button/CustomButton.js";
 import { supabase } from "../../../../supabase/supabase.js";
 import { addToCart } from "@/lib/redux/slices/cartSlice.js";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAppContext } from "@/context/index.js";
 import Header from "@/components/header/Header.js";
 import Card from "@mui/material/Card";
@@ -24,8 +24,11 @@ import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
+import Link from "next/link";
+import { ArrowRightAlt, ChevronRight } from "@mui/icons-material";
 
 const SubCategories = () => {
+  const subCateg=useSelector((state)=>state.sidePanel.subCategory)
   const [openModal, setOpenModal] = useState(false);
   const searchParams = useSearchParams();
   const category_id = searchParams.get("category_id");
@@ -95,15 +98,16 @@ const SubCategories = () => {
     setFoodData(data);
     setOpenModal(true);
   };
-  const onApplyAddToCart = (e,item) => {
-    const updatedItem={
+  const onApplyAddToCart = (e, item) => {
+    const updatedItem = {
       ...item,
-      quantity
-    }
+      quantity,
+      amount: item.price * quantity,
+    };
     try {
       dispatch(addToCart(updatedItem));
-      setOpenModal(false)
-      setQuantity(1)
+      setOpenModal(false);
+      setQuantity(1);
     } catch (error) {
       console.log(error);
     }
@@ -128,6 +132,13 @@ const SubCategories = () => {
   return (
     <>
       <Header padding={"1rem 2.5rem"} title={"Food Items"} />
+      <div className={styles.breadcrumbs}>
+        <Link className={styles.links} href={"/menu/categories"}>
+          Categories
+        </Link>
+        <ChevronRight />
+        <div className={styles.links2}>{subCateg}</div>
+      </div>
       <Grid container className={styles.menu}>
         {foodItems.map((data) => (
           <Grid item md={3} className={styles.SubCategories}>
@@ -137,12 +148,7 @@ const SubCategories = () => {
       </Grid>
       <Modal open={openModal} onClose={toggleDrawer(false)}>
         <Card sx={{ maxWidth: 400 }} className={styles.modal}>
-          <CardMedia
-            component="img"
-            height="199"
-            image={foodData.image_url}
-          
-          />
+          <CardMedia component="img" height="199" image={foodData.image_url} />
           <CardContent className={styles.cardContent}>
             <CardHeader className={styles.title} title={foodData.name} />
             <div className={styles.price}>₹ {quantity * foodData.price}</div>
@@ -153,7 +159,6 @@ const SubCategories = () => {
                 className={styles.quantityCount}
                 onClick={() => handleQuantity("decrease")}
                 disableRipple
-                
               >
                 -
               </Button>
@@ -166,7 +171,10 @@ const SubCategories = () => {
                 +
               </Button>
             </ButtonGroup>
-            <CustomButton text={"Add to cart"} onClick={(e)=>onApplyAddToCart(e,foodData)} />
+            <CustomButton
+              text={"Add to cart"}
+              onClick={(e) => onApplyAddToCart(e, foodData)}
+            />
           </CardActions>
         </Card>
       </Modal>

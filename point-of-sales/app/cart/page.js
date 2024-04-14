@@ -27,41 +27,27 @@ const page = () => {
   const dispatch = useDispatch();
   const { user, setUser } = useAppContext();
   const [quantity, setQuantity] = useState(1);
+  const [total, setTotal] = useState(0);
   const fetchUser = async () => {
     const { data, error } = await supabase.auth.getSession();
     console.log("data in cart", data);
     setUser(data);
   };
+  function calculateTotal() {
+    let total = 0;
+    cart.forEach((item) => {
+      total += item.amount;
+    });
+    setTotal(total);
+  }
   useEffect(() => {
     fetchUser();
   }, []);
-  const dummy = [
-    {
-      name: "Paneer Tikka",
-      image: "/images/coffee.png",
-      price: "340",
-    },
-    // {
-    //   name: "Butter Chicken",
-    //   image: "/images/coffee.png",
-    //   price: "340",
-    // },
-    // {
-    //   name: "Masala Dosa",
-    //   image: "/images/coffee.png",
-    //   price: "340",
-    // },
-    // {
-    //   name: "Chole Bhature",
-    //   image: "/images/coffee.png",
-    //   price: "340",
-    // },
-    // {
-    //   name: "Samosa",
-    //   image: "/images/coffee.png",
-    //   price: "340",
-    // },
-  ];
+  useEffect(() => {
+    console.log('quantyiy',quantity);
+    calculateTotal();
+  }, [cart]);
+
   const handleQuantity = (e, type, itemId) => {
     e.preventDefault();
     switch (type) {
@@ -76,8 +62,7 @@ const page = () => {
     }
   };
   const handleRemoveItem = (id) => {
-    dispatch(removeItem(id))
-    console.log("removeitem");
+    dispatch(removeItem(id));
   };
   const handleClearCart = () => {
     dispatch(clearCart());
@@ -163,11 +148,14 @@ const page = () => {
                       </Grid>
                       <Grid item md={2} className={styles.priceContainer}>
                         <Typography variant="body2" className={styles.price}>
-                          ₹ {item.price}
+                          ₹ {item.price * item.quantity}
                         </Typography>
                       </Grid>
                       <Grid item md={1} className={styles.cancel}>
-                        <Button variant="text" onClick={()=>handleRemoveItem(item.id)}>
+                        <Button
+                          variant="text"
+                          onClick={() => handleRemoveItem(item.id)}
+                        >
                           <Cancel />
                         </Button>
                       </Grid>
@@ -183,7 +171,7 @@ const page = () => {
                   Total
                 </Grid>
                 <Grid item md={6} display={"flex"} justifyContent={"flex-end"}>
-                  ₹ 2000
+                  ₹ {total}
                 </Grid>
               </Grid>
               <Button
