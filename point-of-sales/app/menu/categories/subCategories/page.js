@@ -26,6 +26,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Link from "next/link";
 import { ArrowRightAlt, ChevronRight } from "@mui/icons-material";
+import {store} from "@/lib/redux/store.js";
 
 const SubCategories = () => {
   const subCateg=useSelector((state)=>state.sidePanel.subCategory)
@@ -105,9 +106,8 @@ const SubCategories = () => {
       amount: item.price * quantity,
     };
     try {
-      dispatch(addToCart(updatedItem));
-      setOpenModal(false);
-      setQuantity(1);
+      // Dispatch action to add item to cart
+      store.dispatch(addToCart(foodData));
     } catch (error) {
       console.log(error);
     }

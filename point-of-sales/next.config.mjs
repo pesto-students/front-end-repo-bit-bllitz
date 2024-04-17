@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 export default{
+  
   async redirects() {
     return [
       // Basic redirect
@@ -10,5 +11,8 @@ export default{
         permanent: true,
       },
     ];
+  },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
   },
 };
