@@ -9,8 +9,8 @@ import styles from "../auth.module.scss";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { supabase } from "../../../supabase/supabase";
-import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
+import Loading from "@/components/loading/Loading";
 
 const Signin = () => {
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,6 @@ const Signin = () => {
       const signinSession = await supabase.auth.getSession();
       console.log("signing data", signinSession);
       if (signinSession?.data?.session) {
-        console.log("signin if block");
         router.push("/dashboard");
       }
     };
@@ -53,37 +52,44 @@ const Signin = () => {
         console.log("user in signin supabase", user);
       }
     } catch (error) {
+      setLoading(false)
       console.log(error.message);
     }
   };
 
   return (
-    <div>
-      <Sidebar
-        title={"Welcome Back!"}
-        subtitle={"Please, sign in to continue"}
-        actionText={"Don’t have an account?"}
-        linkText={"Go to registration"}
-        navigateLink={"/auth/signup"}
-      >
-        <CustomInput
-          placeholder={"Email"}
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          type={"email"}
-        />
-        <CustomInput
-          placeholder={"Password"}
-          type={"password"}
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-        />
-        <CustomButton text={"Sign in"} onClick={handleSignIn} />
-        <Typography variant="body1" className={styles.link}>
-          <Link href={"/auth/reset"}>Forgot Password?</Link>
-        </Typography>
-      </Sidebar>
-    </div>
+    <>
+      {loading ? (
+        <Loading/>
+      ) : (
+        <div>
+          <Sidebar
+            title={"Welcome Back!"}
+            subtitle={"Please, sign in to continue"}
+            actionText={"Don’t have an account?"}
+            linkText={"Go to registration"}
+            navigateLink={"/auth/signup"}
+          >
+            <CustomInput
+              placeholder={"Email"}
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              type={"email"}
+            />
+            <CustomInput
+              placeholder={"Password"}
+              type={"password"}
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+            />
+            <CustomButton text={"Sign in"} onClick={handleSignIn} />
+            <Typography variant="body1" className={styles.link}>
+              <Link href={"/auth/reset"}>Forgot Password?</Link>
+            </Typography>
+          </Sidebar>
+        </div>
+      )}
+    </>
   );
 };
 

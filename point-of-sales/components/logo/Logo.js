@@ -1,10 +1,14 @@
 import { Typography } from "@mui/material";
 import React from "react";
 import styles from "./Logo.module.scss";
-const Logo = () => {
+const Logo = ({ font }) => {
   return (
     <div className={styles.logoContainer}>
-      <Typography className={styles.logo} variant="h5">
+      <Typography
+        style={{ fontSize: font ? font : "2.5rem" }}
+        className={styles.logo}
+        variant="h5"
+      >
         Smart <span>POS</span>
       </Typography>
     </div>

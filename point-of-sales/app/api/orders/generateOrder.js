@@ -18,8 +18,6 @@ export default async function handler(req, res) {
         console.error('Error fetching orders:', error.message);
         res.status(500).json({ error: 'Error fetching orders' });
       }
-    } else {
-      res.status(405).json({ error: 'Method Not Allowed' });
     }
     if (req.method === 'POST') { 
      // Assuming customerId and cartItems are passed in the request body
@@ -33,9 +31,6 @@ export default async function handler(req, res) {
        console.error('Error generating order:', error);
        res.status(500).json({ error: 'Internal Server Error' });
      }
-   } else {
-     res.setHeader('Allow', ['POST']);
-     res.status(405).end(`Method ${req.method} Not Allowed`);
-   }
+   } 
 }
 

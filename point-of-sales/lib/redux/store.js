@@ -1,14 +1,23 @@
-import userSlice from "../redux/slices/userSlice";
-import cartSlice from "./slices/cartSlice";
-import sidePanelSlice from "./slices/sidePanelSlice";
+import storage from "@/storage"
+import persistReducer from "redux-persist/es/persistReducer"
+import rootReducer from "./slices/rootReducer"
+import { configureStore } from "@reduxjs/toolkit"
+import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from "redux-persist"
+const persistConfig={
+  key:'root',
+  version:1,
+  storage,
+  blacklist:[]
+}
 
-const { configureStore } = require("@reduxjs/toolkit");
+const persistReducers=persistReducer(persistConfig,rootReducer)
 
-export const store = configureStore({
-  reducer: {
-    auth: userSlice,
-    sidePanel:sidePanelSlice,
-    cart: cartSlice
-    // add more reducers if needed
-  },
-});
+export const store=configureStore({
+  reducer:persistReducers,
+  middleware:(getDefaultMiddleware)=>getDefaultMiddleware({
+    serializableCheck:{
+      ignoreActions:[FLUSH,REHYDRATE,PAUSE,PERSIST,PURGE,REGISTER]
+    }
+  }),
+  // devTools:process.env.
+})

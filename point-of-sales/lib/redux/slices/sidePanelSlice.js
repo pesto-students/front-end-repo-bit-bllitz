@@ -1,6 +1,7 @@
 const { createSlice } = require("@reduxjs/toolkit");
 const initialState = {
-  selectedTab: {},
+  selectedTab: 0,
+  subCategory: "",
 };
 const sidePanelSlice = createSlice({
   name: "sidepanel",
@@ -12,8 +13,14 @@ const sidePanelSlice = createSlice({
         selectedTab: action.payload,
       };
     },
+    setSubcategory(state, action) {
+      return {
+        ...state,
+        subCategory: action.payload,
+      };
+    },
   },
 });
-export const { setSelectedTab } = sidePanelSlice.actions;
+export const { setSelectedTab ,setSubcategory} = sidePanelSlice.actions;
 
 export default sidePanelSlice.reducer;
