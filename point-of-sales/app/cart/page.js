@@ -4,6 +4,10 @@ import styles from "./Cart.module.scss";
 import Header from "@/components/header/Header";
 import { supabase } from "../../supabase/supabase";
 import { useAppContext } from "@/context";
+import { selectCartItems } from "@/lib/redux/selectors/cardSelector";
+const { v4: uuidv4 } = require("uuid");
+import orderSlice, { generateOrder } from "@/lib/redux/slices/orderSlice";
+import {store} from "@/lib/redux/store"
 import {
   Button,
   ButtonGroup,
@@ -22,8 +26,12 @@ import {
   increaseQuantity,
   removeItem,
 } from "@/lib/redux/slices/cartSlice";
+
+let cartItems=[];
+let orderId=0;
 const page = () => {
   const cart = useSelector((state) => state.cart.items);
+  cartItems=cart;
   const dispatch = useDispatch();
   const { user, setUser } = useAppContext();
   const [quantity, setQuantity] = useState(1);
@@ -61,6 +69,53 @@ const page = () => {
         break;
     }
   };
+  const placeOrder =  async () => {
+    
+    
+      const{ data:user ,error:usererror}= await supabase.auth.getUser();
+      
+      console.log(user);
+      orderId=orderId+1
+      // const orderId = uuidv4()
+      console.log(orderId);
+      console.log(cartItems);
+     
+      
+       // Dispatch action to generate order
+       
+
+      // Insert order into Supabase
+      const { error } = await supabase
+        .from("orders")
+        .insert([
+          {
+            order_id: orderId,
+            waiter_id: user.user.id,
+            total_amount: 120,
+            created_at: new Date(),
+            updated_at: null,
+            status: "active",
+          },
+        ]);
+        if(error){
+          throw error
+        }
+        await updateOrderItem(orderId);
+  };
+  
+  const updateOrderItem=async (orderId)=>{
+    cartItems.map((item) => {
+     
+      insertFoodItem(orderId,item.id,1)
+      
+    });
+  }
+  const insertFoodItem=async(orderId,food_id,quantity)=>{
+     await supabase
+        .from("order_items")
+        .insert({ order_id: orderId, food_id: food_id, quantity: 1 });
+
+  }
   const handleRemoveItem = (id) => {
     dispatch(removeItem(id));
   };
@@ -178,6 +233,8 @@ const page = () => {
                 variant="contained"
                 endIcon={<ArrowRightAlt />}
                 className={styles.order}
+                onClick={placeOrder}
+
               >
                 Place Order
               </Button>

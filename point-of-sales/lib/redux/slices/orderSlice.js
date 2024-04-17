@@ -20,18 +20,17 @@ const orderSlice = createSlice({
         await cartItems.map((item) => {
           const { orderitemdata, ordererror } = supabase
             .from("order_items")
-            .insert([{ order_id: orderId, food_id: item.id, quantity: 1 }]);
+            .insert({ order_id: orderId, food_id: item.id, quantity: 1 });
 
           if (error) {
             throw error;
           }
-          1;
         });
 
         // Insert order into Supabase
         const { data, error } = await supabase
           .from("orders")
-          .insert([
+          .insert(
             {
               order_id: orderId,
               waiter_id: customerId,
@@ -40,7 +39,7 @@ const orderSlice = createSlice({
               updated_at: null,
               status: active,
             },
-          ]);
+          );
 
         // Push the order data to the state if insertion is successful
         state.orders.push(data);
