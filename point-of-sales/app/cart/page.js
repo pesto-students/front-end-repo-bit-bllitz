@@ -29,8 +29,10 @@ import {
 
 let cartItems=[];
 let orderId=0;
+let cart=[];
 const page = () => {
-  const cart = useSelector((state) => state.cart.items);
+   cart=useSelector((state) => state.cart.items);
+   console.log(cart);
   cartItems=cart;
   const dispatch = useDispatch();
   const { user, setUser } = useAppContext();
@@ -42,7 +44,7 @@ const page = () => {
     setUser(data);
   };
   function calculateTotal() {
-    let total = 0;
+     let total = 0;
     cart.forEach((item) => {
       total += item.amount;
     });

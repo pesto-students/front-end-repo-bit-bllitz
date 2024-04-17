@@ -106,8 +106,10 @@ const SubCategories = () => {
       amount: item.price * quantity,
     };
     try {
+      dispatch(addToCart(updatedItem));
+      setOpenModal(false);
+      setQuantity(1);
       // Dispatch action to add item to cart
-      store.dispatch(addToCart(foodData));
     } catch (error) {
       console.log(error);
     }
