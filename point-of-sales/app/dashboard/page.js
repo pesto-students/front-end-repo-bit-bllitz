@@ -34,6 +34,8 @@ import { supabase } from "../../supabase/supabase";
 import { Circle } from "@mui/icons-material";
 import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "@/lib/redux/slices/userSlice";
 // Register ChartJS components using ChartJS.register
 ChartJS.register(
   CategoryScale,
@@ -49,28 +51,41 @@ const Dashboard = () => {
   const [totalOrdersCount, setTotalOrdersCount] = useState(0);
   const router = useRouter();
   const { setUser } = useAppContext();
+  const dispatch = useDispatch();
+  const userState = useSelector((state) => state.auth);
+  const { user = {} } = userState;
   useEffect(() => {
-    const fetchSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      console.log("dashboard data", data);
-      if (data.session == null) {
-        router.push("/auth/signin");
-      } else {
-        setUser(data);
-      }
-    };
-    fetchSession();
+    // const fetchSession = async () => {
+    //   const { data, error } = await supabase.auth.getUser();
+    //   console.log("dashboard data", data);
+    //   dispatch(setUserData(data.user))
+    //   if (data== null) {
+    //     router.push("/auth/signin");
+    //   } else {
+    //     setUser(data);
+    //   }
+    // };
+    // fetchSession();
+    if (user.id) {
+      console.log("userData in dashboard", user);
+    }
+    if (!user.id) {
+          router.push("/auth/signin");
+    }
   }, []);
+
   const handleChange = (event) => {
     setValue(event.target.value);
   };
+
   const getPercentageOfOrders = (data) => {};
+
   const getTotalOrders = async () => {
     try {
       const totalOrders = await fetch("/api/orders");
       console.log("totalOrders", totalOrders.data);
       const data = totalOrders.data;
-      setOrders;
+      // setOrders;
     } catch (error) {
       console.error("Error fetching orders:", error.message);
     }

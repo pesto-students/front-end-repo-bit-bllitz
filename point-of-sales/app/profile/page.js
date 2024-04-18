@@ -22,6 +22,8 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../supabase/supabase";
 import Progress from "@/components/progress/Progress";
 import { useAppContext } from "@/context";
+import { useDispatch } from "react-redux";
+import { setUserData } from "@/lib/redux/slices/userSlice";
 const page = () => {
   const style = {
     position: "absolute",
@@ -56,9 +58,9 @@ const page = () => {
     pincode: "",
   });
   const getUserData = async () => {
-    setLoading(true)
+    setLoading(true);
     const { data: userData, error } = await supabase.auth.getSession();
-    setUser(userData);
+    // setUser(userData);
     console.log("userData in profile", userData);
     if (userData.session) {
       const userId = userData.session.user.id;
@@ -72,13 +74,14 @@ const page = () => {
       const fullname = profileFromId[0]?.fullname;
       const [first_name, last_name] = fullname ? fullname.split(" ") : ["", ""]; // Split fullname into first_name and last_name
       setFormData({ ...profileFromId[0], first_name, last_name });
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getUserData();
   }, []);
+  const dispatch = useDispatch();
 
   const handleListItemClick = async (event, index) => {
     setSelectedIndex(index);
@@ -87,9 +90,10 @@ const page = () => {
         setLoading(true);
         const signoutRes = await supabase.auth.signOut();
         console.log("signout res", signoutRes);
-        router.refresh();
+        dispatch(setUserData({}));
         router.push("/auth/signin");
-        setUser(undefined);
+        router.refresh();
+
         setLoading(false);
         break;
 
