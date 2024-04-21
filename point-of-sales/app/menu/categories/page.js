@@ -13,6 +13,7 @@ import { useAppContext } from "@/context/index.js";
 import Header from "@/components/header/Header.js";
 import { useDispatch } from "react-redux";
 import { setSubcategory } from "@/lib/redux/slices/sidePanelSlice.js";
+import Loading from "@/components/loading/Loading.js";
 
 const Categories = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -22,7 +23,7 @@ const Categories = () => {
     totalGuests: "",
     assignedTable: "",
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleUserData = (e) => {
     const { name, value } = e.target;
@@ -34,7 +35,7 @@ const Categories = () => {
 
   const getCategories = useCallback(async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const { data: category, error } = await supabase
         .from("category")
         .select("*");
@@ -45,6 +46,7 @@ const Categories = () => {
 
       if (category) {
         setCategories(category);
+        setLoading(false)
       }
     } catch (error) {
       alert("Error loading user data!");
@@ -62,47 +64,44 @@ const Categories = () => {
     dispatch(setSubcategory(category.name));
     push(`/menu/categories/subCategories?category_id=${category.id}`);
   };
-  const { setUser } = useAppContext();
-  useEffect(() => {
-    const fetchSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      console.log("categories data", data);
-      if (data.session == null) {
-        router.push("/auth/signin");
-      } else {
-        setUser(data);
-      }
-    };
-    fetchSession();
-  }, []);
+
   return (
     <>
-      <Header padding={"1rem 2.5rem"} title={"Categories"} />
-      <Grid container className={styles.menu}>
-        {categories.map((category) => (
-          <Grid item md={3} className={styles.categories}>
-            <ActionAreaCard data={category} onClick={onClickHandle} />
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <Header padding={"1rem 2.5rem"} title={"Categories"} />
+          <Grid container className={styles.menu}>
+            {categories.map((category) => (
+              <Grid item md={3} className={styles.categories}>
+                <ActionAreaCard data={category} onClick={onClickHandle} />
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
-      <CustomModal openModal={openModal} onClose={() => setOpenModal(false)}>
-        <CustomInput
-          placeholder={"Enter number of Guests"}
-          onChange={handleUserData}
-          value={values.totalGuests}
-          inputName={"totalGuests"}
-        />
-        <CustomInput
-          placeholder={"Enter table number"}
-          onChange={handleUserData}
-          value={values.assignedTable}
-          inputName={"assignedTable"}
-        />
-        <CustomButton
-          text={"Assign Table"}
-          onClick={() => setOpenModal(false)}
-        />
-      </CustomModal>
+          <CustomModal
+            openModal={openModal}
+            onClose={() => setOpenModal(false)}
+          >
+            <CustomInput
+              placeholder={"Enter number of Guests"}
+              onChange={handleUserData}
+              value={values.totalGuests}
+              inputName={"totalGuests"}
+            />
+            <CustomInput
+              placeholder={"Enter table number"}
+              onChange={handleUserData}
+              value={values.assignedTable}
+              inputName={"assignedTable"}
+            />
+            <CustomButton
+              text={"Assign Table"}
+              onClick={() => setOpenModal(false)}
+            />
+          </CustomModal>
+        </>
+      )}
     </>
   );
 };

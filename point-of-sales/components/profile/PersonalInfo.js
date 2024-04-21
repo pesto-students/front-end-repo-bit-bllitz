@@ -15,10 +15,16 @@ import CustomInput from "../auth/input/CustomInput";
 import CustomButton from "../button/CustomButton";
 import { supabase } from "../../supabase/supabase";
 import { useAppContext } from "@/context";
-const PersonalInfo = ({ formData,setFormData }) => {
+import { useSelector } from "react-redux";
+const PersonalInfo = ({ formData, setFormData }) => {
+  const userData = useSelector((state) => state.auth);
+  const { user = {} } = userData;
+  const { id: userIDs = "" } = user;
+
   const [toast, setToast] = useState({
-    msg: "",
     visible: false,
+    msg: "",
+    color: "",
   });
 
   const handleChange = (event) => {
@@ -37,27 +43,35 @@ const PersonalInfo = ({ formData,setFormData }) => {
         fullname: formData.first_name + " " + formData.last_name,
       };
       const { first_name, last_name, ...newPayload } = payload;
-      const response = await fetch(`/api/profile/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newPayload),
-      });
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .update(newPayload)
+        .eq("id", userIDs)
+        .select();
 
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
-      const responseData = await response.json(); // Parse response body as JSON
-
-      console.log("Profile updated successfully:", responseData);
-      if (responseData?.success) {
+      if (error) {
+        console.error("Error updating profile:", error);
         setToast({
-          msg: "Profile updated successfully!",
+          msg: "Error updating profile",
           visible: true,
+          color: "#C8161D",
         });
+      } else {
+        if (profile && profile.length > 0) {
+          setToast({
+            msg: "Profile updated successfully!",
+            visible: true,
+            color: "#008000",
+          });
+        } else {
+          setToast({
+            msg: "No profile found with the provided ID(s)",
+            visible: true,
+            color: "#C8161D",
+          });
+        }
       }
-      return responseData;
+      console.log("Profile updated successfully:", profile);
     } catch (error) {
       console.error("Error updating profile:", error);
       setToast({
@@ -84,14 +98,14 @@ const PersonalInfo = ({ formData,setFormData }) => {
             value={"Female"}
             control={<Radio />}
             label="Female"
-            defaultValue={formData.gender == 'Female'}
+            defaultValue={formData.gender == "Female"}
             className={styles.gender}
           />
           <FormControlLabel
             value={"Male"}
             className={styles.gender}
             control={<Radio />}
-            defaultValue={formData.gender == 'Male'}
+            defaultValue={formData.gender == "Male"}
             label="Male"
           />
         </RadioGroup>
@@ -187,7 +201,9 @@ const PersonalInfo = ({ formData,setFormData }) => {
           />
         </Grid>
       </Grid>
-      <CustomButton text={"Save Changes"} onClick={handleSaveInfo} />
+      <CustomButton text={"Save Changes"} onClick={() => handleSaveInfo()} />
+      <div classNa me={styles.alert}>
+        
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={toast.visible}
@@ -195,6 +211,7 @@ const PersonalInfo = ({ formData,setFormData }) => {
         message={toast.msg}
         autoHideDuration={2000}
       />
+      </div>
     </div>
   );
 };

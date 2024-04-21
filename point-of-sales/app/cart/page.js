@@ -7,7 +7,7 @@ import { useAppContext } from "@/context";
 import { selectCartItems } from "@/lib/redux/selectors/cardSelector";
 const { v4: uuidv4 } = require("uuid");
 import orderSlice, { generateOrder } from "@/lib/redux/slices/orderSlice";
-import {store} from "@/lib/redux/store"
+import { store } from "@/lib/redux/store";
 import {
   Button,
   ButtonGroup,
@@ -27,13 +27,13 @@ import {
   removeItem,
 } from "@/lib/redux/slices/cartSlice";
 
-let cartItems=[];
-let orderId=0;
-let cart=[];
+let cartItems = [];
+let orderId = 0;
+let cart = [];
 const page = () => {
-   cart=useSelector((state) => state.cart.items);
-   console.log(cart);
-  cartItems=cart;
+  cart = useSelector((state) => state.cart.items);
+  console.log(cart);
+  cartItems = cart;
   const dispatch = useDispatch();
   const { user, setUser } = useAppContext();
   const [quantity, setQuantity] = useState(1);
@@ -44,7 +44,7 @@ const page = () => {
     setUser(data);
   };
   function calculateTotal() {
-     let total = 0;
+    let total = 0;
     cart.forEach((item) => {
       total += item.amount;
     });
@@ -54,7 +54,7 @@ const page = () => {
     fetchUser();
   }, []);
   useEffect(() => {
-    console.log('quantyiy',quantity);
+    console.log("quantyiy", quantity);
     calculateTotal();
   }, [cart]);
 
@@ -71,53 +71,44 @@ const page = () => {
         break;
     }
   };
-  const placeOrder =  async () => {
-    
-    
-      const{ data:user ,error:usererror}= await supabase.auth.getUser();
-      
-      console.log(user);
-      orderId=orderId+1
-      // const orderId = uuidv4()
-      console.log(orderId);
-      console.log(cartItems);
-     
-      
-       // Dispatch action to generate order
-       
+  const placeOrder = async () => {
+    const { data: user, error: usererror } = await supabase.auth.getUser();
 
-      // Insert order into Supabase
-      const { error } = await supabase
-        .from("orders")
-        .insert([
-          {
-            order_id: orderId,
-            waiter_id: user.user.id,
-            total_amount: 120,
-            created_at: new Date(),
-            updated_at: null,
-            status: "active",
-          },
-        ]);
-        if(error){
-          throw error
-        }
-        await updateOrderItem(orderId);
+    console.log(user);
+    orderId = orderId + 1;
+    // const orderId = uuidv4()
+    console.log(orderId);
+    console.log(cartItems);
+
+    // Dispatch action to generate order
+
+    // Insert order into Supabase
+    const { error } = await supabase.from("orders").insert([
+      {
+        order_id: orderId,
+        waiter_id: user.user.id,
+        total_amount: 120,
+        created_at: new Date(),
+        updated_at: null,
+        status: "active",
+      },
+    ]);
+    if (error) {
+      throw error;
+    }
+    await updateOrderItem(orderId);
   };
-  
-  const updateOrderItem=async (orderId)=>{
-    cartItems.map((item) => {
-     
-      insertFoodItem(orderId,item.id,1)
-      
-    });
-  }
-  const insertFoodItem=async(orderId,food_id,quantity)=>{
-     await supabase
-        .from("order_items")
-        .insert({ order_id: orderId, food_id: food_id, quantity: 1 });
 
-  }
+  const updateOrderItem = async (orderId) => {
+    cartItems.map((item) => {
+      insertFoodItem(orderId, item.id, 1);
+    });
+  };
+  const insertFoodItem = async (orderId, food_id, quantity) => {
+    await supabase
+      .from("order_items")
+      .insert({ order_id: orderId, food_id: food_id, quantity: 1 });
+  };
   const handleRemoveItem = (id) => {
     dispatch(removeItem(id));
   };
@@ -236,7 +227,6 @@ const page = () => {
                 endIcon={<ArrowRightAlt />}
                 className={styles.order}
                 onClick={placeOrder}
-
               >
                 Place Order
               </Button>

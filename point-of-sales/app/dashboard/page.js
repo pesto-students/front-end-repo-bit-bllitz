@@ -36,6 +36,7 @@ import { useAppContext } from "@/context";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
+import Loading from "@/components/loading/Loading";
 // Register ChartJS components using ChartJS.register
 ChartJS.register(
   CategoryScale,
@@ -54,23 +55,13 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const userState = useSelector((state) => state.auth);
   const { user = {} } = userState;
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    // const fetchSession = async () => {
-    //   const { data, error } = await supabase.auth.getUser();
-    //   console.log("dashboard data", data);
-    //   dispatch(setUserData(data.user))
-    //   if (data== null) {
-    //     router.push("/auth/signin");
-    //   } else {
-    //     setUser(data);
-    //   }
-    // };
-    // fetchSession();
-    if (user.id) {
-      console.log("userData in dashboard", user);
-    }
     if (!user.id) {
-          router.push("/auth/signin");
+      router.push("/auth/signin");
+    }
+    if (user.id) {
+      setLoading(false);
     }
   }, []);
 
@@ -160,140 +151,151 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className={styles.analytics}>
-      <Grid container className={styles.header}>
-        <Grid item xs={8} md={8} className={styles.headerContent}>
-          <Typography variant="h5" className={styles.title}>
-            Dashboard
-          </Typography>
-        </Grid>
-        <Grid item md={1} />
-        <Grid item xs={4} md={3} className={styles.filterContainer}>
-          <TextField
-            id="outlined-select-currency"
-            select
-            fullWidth
-            defaultValue={filterData[0].value}
-            className={styles.selectField}
-          >
-            {filterData.map((option) => (
-              <MenuItem
-                className={styles.menu}
-                key={option.value}
-                value={option.value}
+    <>
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className={styles.analytics}>
+          <Grid container className={styles.header}>
+            <Grid item xs={8} md={8} className={styles.headerContent}>
+              <Typography variant="h5" className={styles.title}>
+                Dashboard
+              </Typography>
+            </Grid>
+            <Grid item md={1} />
+            <Grid item xs={4} md={3} className={styles.filterContainer}>
+              <TextField
+                id="outlined-select-currency"
+                select
+                fullWidth
+                defaultValue={filterData[0].value}
+                className={styles.selectField}
               >
-                {option.value}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-      </Grid>
-      <Grid container>
-        <Grid item xs={4} className={styles.lineChart}>
-          <Card elevation={2} className={styles.chartCard}>
-            <Typography variant="h6" className={styles.title}>
-              Daily Sales
-            </Typography>
-            <div className={styles.chart}>
-              <Line
-                data={{
-                  labels: [
-                    "9:00 am",
-                    "10:00 am",
-                    "11:00 am",
-                    "12:00 pm",
-                    "1:00 pm",
-                    "2:00 pm",
-                  ],
-                  datasets: [
-                    {
-                      data: [1000, 2000, 4000, 3000, 5000, 6000],
-                      borderColor: "#c8161d",
-                      borderWidth: 2, // Adjust the border width as needed
-                      tension: 0.4, // Adjust the tension to make the curve smoother
-                      borderCapStyle: "round", // Set border cap style to round
-                      borderJoinStyle: "round",
-                      pointRadius: 4, // Increase point radius to make the padding more visible
-                      pointHoverBorderWidth: 10,
-                    },
-                  ],
-                }}
-              />
-            </div>
-          </Card>
-        </Grid>
-        <Grid item xs={4} md={4} sm={12} className={styles.doughnutChart}>
-          <Card elevation={2} className={styles.chartCard}>
-            <div className={styles.typeContainer}>
-              <Typography variant="h6" className={styles.title}>
-                Total income
-              </Typography>
-              <div className={styles.type} style={{ marginRight: "0.8rem" }}>
-                <Circle sx={{ color: "#C8161D" }} className={styles.icon} />
-                <Typography variant="body2">Food</Typography>
-              </div>
-              <div className={styles.type}>
-                <Circle sx={{ color: "#FFCA40" }} className={styles.icon} />
-                <Typography variant="body2">Drinks</Typography>
-              </div>
-            </div>
-            <div className={styles.chart}>
-              <Doughnut data={doughnutData} title="doughnt" options={options} />
-            </div>
-          </Card>
-        </Grid>
-        <Grid item xs={4} md={4} sm={12} className={styles.trending}>
-          <Card elevation={2} className={styles.chartCard}>
-            <Typography variant="h6" className={styles.title}>
-              Trending Dishes
-            </Typography>
-            <div className={styles.headContainer}>
-              <Typography variant="body2" className={styles.head}>
-                Dishes
-              </Typography>
-              <Typography variant="body2" className={styles.head}>
-                Orders
-              </Typography>
-            </div>
-            <div className={styles.chart}>
-              <div className={styles.trendingTable}>
-                {dummyData.map((item, i) => (
-                  <div className={styles.details}>
-                    <div className={styles.itemDets}>
-                      <Avatar
-                        className={styles.avatar}
-                        src={item.imge}
-                      ></Avatar>
-                      <div className={styles.specs}>
-                        <Chip
-                          label="Food"
-                          variant="contained"
-                          className={styles.chip}
-                          color={item.color}
-                        />
-                        <Typography variant="body2" className={styles.item}>
-                          {item.item}
-                        </Typography>
-                      </div>
-                    </div>
-                    <div className={styles.itemPrice}>₹36</div>
-                  </div>
+                {filterData.map((option) => (
+                  <MenuItem
+                    className={styles.menu}
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.value}
+                  </MenuItem>
                 ))}
-              </div>
-            </div>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={12} sm={12} className={styles.progressChart}>
-          <Card className={styles.chartCard}>
-            <LinearProgressComponent
-              title={"Total Orders"}
-              data={"89"}
-              progress={totalOrdersCount}
-              color={"#C8161D"}
-            />
-          </Card>
-        </Grid>
-        {/* <Grid item xs={4} className={styles.trending}>
+              </TextField>
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={4} className={styles.lineChart}>
+              <Card elevation={2} className={styles.chartCard}>
+                <Typography variant="h6" className={styles.title}>
+                  Daily Sales
+                </Typography>
+                <div className={styles.chart}>
+                  <Line
+                    data={{
+                      labels: [
+                        "9:00 am",
+                        "10:00 am",
+                        "11:00 am",
+                        "12:00 pm",
+                        "1:00 pm",
+                        "2:00 pm",
+                      ],
+                      datasets: [
+                        {
+                          data: [1000, 2000, 4000, 3000, 5000, 6000],
+                          borderColor: "#c8161d",
+                          borderWidth: 2, // Adjust the border width as needed
+                          tension: 0.4, // Adjust the tension to make the curve smoother
+                          borderCapStyle: "round", // Set border cap style to round
+                          borderJoinStyle: "round",
+                          pointRadius: 4, // Increase point radius to make the padding more visible
+                          pointHoverBorderWidth: 10,
+                        },
+                      ],
+                    }}
+                  />
+                </div>
+              </Card>
+            </Grid>
+            <Grid item xs={4} md={4} sm={12} className={styles.doughnutChart}>
+              <Card elevation={2} className={styles.chartCard}>
+                <div className={styles.typeContainer}>
+                  <Typography variant="h6" className={styles.title}>
+                    Total income
+                  </Typography>
+                  <div
+                    className={styles.type}
+                    style={{ marginRight: "0.8rem" }}
+                  >
+                    <Circle sx={{ color: "#C8161D" }} className={styles.icon} />
+                    <Typography variant="body2">Food</Typography>
+                  </div>
+                  <div className={styles.type}>
+                    <Circle sx={{ color: "#FFCA40" }} className={styles.icon} />
+                    <Typography variant="body2">Drinks</Typography>
+                  </div>
+                </div>
+                <div className={styles.chart}>
+                  <Doughnut
+                    data={doughnutData}
+                    title="doughnt"
+                    options={options}
+                  />
+                </div>
+              </Card>
+            </Grid>
+            <Grid item xs={4} md={4} sm={12} className={styles.trending}>
+              <Card elevation={2} className={styles.chartCard}>
+                <Typography variant="h6" className={styles.title}>
+                  Trending Dishes
+                </Typography>
+                <div className={styles.headContainer}>
+                  <Typography variant="body2" className={styles.head}>
+                    Dishes
+                  </Typography>
+                  <Typography variant="body2" className={styles.head}>
+                    Orders
+                  </Typography>
+                </div>
+                <div className={styles.chart}>
+                  <div className={styles.trendingTable}>
+                    {dummyData.map((item, i) => (
+                      <div className={styles.details}>
+                        <div className={styles.itemDets}>
+                          <Avatar
+                            className={styles.avatar}
+                            src={item.imge}
+                          ></Avatar>
+                          <div className={styles.specs}>
+                            <Chip
+                              label="Food"
+                              variant="contained"
+                              className={styles.chip}
+                              color={item.color}
+                            />
+                            <Typography variant="body2" className={styles.item}>
+                              {item.item}
+                            </Typography>
+                          </div>
+                        </div>
+                        <div className={styles.itemPrice}>₹36</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={12} sm={12} className={styles.progressChart}>
+              <Card className={styles.chartCard}>
+                <LinearProgressComponent
+                  title={"Total Orders"}
+                  data={"89"}
+                  progress={totalOrdersCount}
+                  color={"#C8161D"}
+                />
+              </Card>
+            </Grid>
+            {/* <Grid item xs={4} className={styles.trending}>
           <Card elevation={2} className={styles.chartCard}>
             <Typography variant="h6" className={styles.title}>
               Trending Dishes
@@ -331,7 +333,7 @@ const Dashboard = () => {
             </div>
           </Card>
         </Grid> */}
-        {/* <Grid item xs={4} className={styles.tableData}>
+            {/* <Grid item xs={4} className={styles.tableData}>
           <Card elevation={2} className={styles.chartCard}>
             <Typography variant="h6" className={styles.title}>
               Best Employees
@@ -366,8 +368,10 @@ const Dashboard = () => {
             </div>
           </Card>
         </Grid> */}
-      </Grid>
-    </div>
+          </Grid>
+        </div>
+      )}
+    </>
   );
 };
 

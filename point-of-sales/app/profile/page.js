@@ -24,6 +24,8 @@ import Progress from "@/components/progress/Progress";
 import { useAppContext } from "@/context";
 import { useDispatch } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
+import { setSelectedTab } from "@/lib/redux/slices/sidePanelSlice";
+import Loading from "@/components/loading/Loading";
 const page = () => {
   const style = {
     position: "absolute",
@@ -91,6 +93,7 @@ const page = () => {
         const signoutRes = await supabase.auth.signOut();
         console.log("signout res", signoutRes);
         dispatch(setUserData({}));
+        dispatch(setSelectedTab(0));
         router.push("/auth/signin");
         router.refresh();
 
@@ -102,7 +105,7 @@ const page = () => {
     }
   };
   const [deleteModal, setDelModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.log("selectedInd", selectedIndex);
@@ -137,118 +140,130 @@ const page = () => {
     }
   };
   return (
-    <div className={styles.profileContainer}>
-      <Typography variant="h5" className={styles.header}>
-        Profile
-      </Typography>
+    <>
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className={styles.profileContainer}>
+          <Typography variant="h5" className={styles.header}>
+            Profile
+          </Typography>
 
-      <Grid container className={styles.dataContainer}>
-        <Grid item md={3.5} sm={12} xs={12} className={styles.cardContainer}>
-          <Card className={styles.personalData} elevation={2}>
-            <Avatar
-              src={"/images/avatar.png"}
-              sx={{ width: 120, height: 120 }}
-              className={styles.avatar}
+          <Grid container className={styles.dataContainer}>
+            <Grid
+              item
+              md={3.5}
+              sm={12}
+              xs={12}
+              className={styles.cardContainer}
             >
-              Z
-            </Avatar>
-            <Typography variant="h6" className={styles.staffData}>
-              {formData.fullname}
-            </Typography>
-            <Typography variant="body2" className={styles.staffSub}>
-              {formData.role}
-            </Typography>
-            <Grid container className={styles.workData}>
-              <Grid item md={6} sm={6} xs={12} className={styles.income}>
-                <Typography variant="h6" className={styles.main}>
-                  77,551
+              <Card className={styles.personalData} elevation={2}>
+                <Avatar
+                  src={"/images/avatar.png"}
+                  sx={{ width: 120, height: 120 }}
+                  className={styles.avatar}
+                >
+                  Z
+                </Avatar>
+                <Typography variant="h6" className={styles.staffData}>
+                  {formData.fullname}
                 </Typography>
-                <Typography variant="body2" className={styles.sub}>
-                  Income
+                <Typography variant="body2" className={styles.staffSub}>
+                  {formData.role}
                 </Typography>
-              </Grid>
-              <Grid item md={6} sm={6} xs={12} className={styles.orders}>
-                <Typography variant="h6" className={styles.main}>
-                  50
-                </Typography>
-                <Typography variant="body2" className={styles.sub}>
-                  Orders
-                </Typography>
-              </Grid>
+                <Grid container className={styles.workData}>
+                  <Grid item md={6} sm={6} xs={12} className={styles.income}>
+                    <Typography variant="h6" className={styles.main}>
+                      77,551
+                    </Typography>
+                    <Typography variant="body2" className={styles.sub}>
+                      Income
+                    </Typography>
+                  </Grid>
+                  <Grid item md={6} sm={6} xs={12} className={styles.orders}>
+                    <Typography variant="h6" className={styles.main}>
+                      50
+                    </Typography>
+                    <Typography variant="body2" className={styles.sub}>
+                      Orders
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Divider sx={{ width: "100%" }} />
+                <List className={styles.listContainer}>
+                  <ListItemButton
+                    selected={selectedIndex == 1}
+                    onClick={(event) => handleListItemClick(event, 1)}
+                    className={styles.listBtn}
+                  >
+                    Personal information
+                  </ListItemButton>
+                  <ListItemButton
+                    className={styles.listBtn}
+                    selected={selectedIndex == 2}
+                    onClick={(event) => handleListItemClick(event, 2)}
+                  >
+                    Login and Password
+                  </ListItemButton>
+                  <ListItemButton
+                    className={styles.listBtn}
+                    selected={selectedIndex == 3}
+                    onClick={(event) => handleListItemClick(event, 3)}
+                  >
+                    Logout
+                  </ListItemButton>
+                </List>
+                <div className={styles.btnContainer}>
+                  <Button
+                    variant="text"
+                    startIcon={<DeleteIcon />}
+                    className={styles.delBtn}
+                    onClick={handleDeleteAcc}
+                  >
+                    Delete Account
+                  </Button>
+                </div>
+              </Card>
             </Grid>
-            <Divider sx={{ width: "100%" }} />
-            <List className={styles.listContainer}>
-              <ListItemButton
-                selected={selectedIndex == 1}
-                onClick={(event) => handleListItemClick(event, 1)}
-                className={styles.listBtn}
-              >
-                Personal information
-              </ListItemButton>
-              <ListItemButton
-                className={styles.listBtn}
-                selected={selectedIndex == 2}
-                onClick={(event) => handleListItemClick(event, 2)}
-              >
-                Login and Password
-              </ListItemButton>
-              <ListItemButton
-                className={styles.listBtn}
-                selected={selectedIndex == 3}
-                onClick={(event) => handleListItemClick(event, 3)}
-              >
-                Logout
-              </ListItemButton>
-            </List>
-            <div className={styles.btnContainer}>
-              <Button
-                variant="text"
-                startIcon={<DeleteIcon />}
-                className={styles.delBtn}
-                onClick={handleDeleteAcc}
-              >
-                Delete Account
-              </Button>
-            </div>
-          </Card>
-        </Grid>
-        <Grid item md={1}></Grid>
-        <Grid item md={5} className={styles.formContainer} sm={12} xs={12}>
-          {getContent()}
-        </Grid>
-        <Grid item md={2.5} xs={0} />
-      </Grid>
-      {deleteModal && (
-        <Modal open={deleteModal} onClose={() => setDelModal(false)}>
-          <Box sx={style}>
-            <ReportIcon sx={{ color: "#c3040a", fontSize: "3rem " }} />
-            <Typography
-              id="modal-modal-title"
-              className={styles.modalTitle}
-              variant="h6"
-              component="h2"
-            >
-              Are you sure you want to delete your account permanently?
-            </Typography>
-            <Typography
-              id="modal-modal-description"
-              className={styles.modalSub}
-              sx={{ mt: 2 }}
-            >
-              Deleting your account will lead to the permanent loss of data.{" "}
-            </Typography>
-            <div className={styles.modalBtn}>
-              <Button variant="outlined" onClick={() => setDelModal(false)}>
-                Cancel
-              </Button>
-              <Button variant="contained" onClick={handleDeleteAcc}>
-                Yes, Delete
-              </Button>
-            </div>
-          </Box>
-        </Modal>
+            <Grid item md={1}></Grid>
+            <Grid item md={5} className={styles.formContainer} sm={12} xs={12}>
+              {getContent()}
+            </Grid>
+            <Grid item md={2.5} xs={0} />
+          </Grid>
+          {deleteModal && (
+            <Modal open={deleteModal} onClose={() => setDelModal(false)}>
+              <Box sx={style}>
+                <ReportIcon sx={{ color: "#c3040a", fontSize: "3rem " }} />
+                <Typography
+                  id="modal-modal-title"
+                  className={styles.modalTitle}
+                  variant="h6"
+                  component="h2"
+                >
+                  Are you sure you want to delete your account permanently?
+                </Typography>
+                <Typography
+                  id="modal-modal-description"
+                  className={styles.modalSub}
+                  sx={{ mt: 2 }}
+                >
+                  Deleting your account will lead to the permanent loss of data.{" "}
+                </Typography>
+                <div className={styles.modalBtn}>
+                  <Button variant="outlined" onClick={() => setDelModal(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="contained" onClick={handleDeleteAcc}>
+                    Yes, Delete
+                  </Button>
+                </div>
+              </Box>
+            </Modal>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
