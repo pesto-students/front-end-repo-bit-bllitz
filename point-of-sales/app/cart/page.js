@@ -26,6 +26,7 @@ import {
   increaseQuantity,
   removeItem,
 } from "@/lib/redux/slices/cartSlice";
+import { setUserData } from "@/lib/redux/slices/userSlice";
 
 let cartItems=[];
 let orderId=0;
@@ -75,8 +76,7 @@ const page = () => {
     
     
       const{ data:user ,error:usererror}= await supabase.auth.getUser();
-      
-      console.log(user);
+      dispatch(setUserData(user.user))
       orderId=orderId+1
       // const orderId = uuidv4()
       console.log(orderId);
@@ -93,7 +93,7 @@ const page = () => {
           {
             order_id: orderId,
             waiter_id: user.user.id,
-            total_amount: 120,
+            total_amount: total,
             created_at: new Date(),
             updated_at: null,
             status: "active",
@@ -102,20 +102,20 @@ const page = () => {
         if(error){
           throw error
         }
-        await updateOrderItem(orderId);
+        await updateOrderItem(orderId,user.user.id);
   };
   
-  const updateOrderItem=async (orderId)=>{
+  const updateOrderItem=async (orderId,waiter_id)=>{
     cartItems.map((item) => {
      
-      insertFoodItem(orderId,item.id,1)
+      insertFoodItem(orderId,item.id,1,waiter_id)
       
     });
   }
-  const insertFoodItem=async(orderId,food_id,quantity)=>{
+  const insertFoodItem=async(orderId,food_id,quantity,waiter_id)=>{
      await supabase
         .from("order_items")
-        .insert({ order_id: orderId, food_id: food_id, quantity: 1 });
+        .insert({ order_id: orderId, food_id: food_id, quantity: 1,waiter_id:waiter_id});
 
   }
   const handleRemoveItem = (id) => {

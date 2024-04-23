@@ -107,21 +107,26 @@ import React from "react";
 import CustomChip from "../../components/chip/CustomChip.js";
 import CustomButton from "@/components/button/CustomButton";
 import { supabase } from "../../supabase/supabase";
+import { useSelector} from "react-redux";
+import { useEffect,useState } from "react";
 
-const mockOrders = [
-  {
-    order_id: "Order#35",
-    price: "450Rs",
-  },
-  {
-    order_id: "Order#34",
-    price: "650Rs",
-  },
-  {
-    order_id: "Order#33",
-    price: "350Rs",
-  },
-];
+
+
+
+// const mockOrders = [
+//   {
+//     order_id: "Order#35",
+//     price: "450Rs",
+//   },
+//   {
+//     order_id: "Order#34",
+//     price: "650Rs",
+//   },
+//   {
+//     order_id: "Order#33",
+//     price: "350Rs",
+//   },
+// ];
 
 const currentOrderDetails = {
   order_id: " Order#35",
@@ -147,13 +152,37 @@ const currentOrderDetails = {
   ],
 };
 
+
 const Bills = () => {
+  const [mockOrders, setmockOrders] = useState([{
+    order_id: "",
+    total_amount:"" 
+  }]);
+  const initializeOrder= async ()=>{
+    const {data:user,error:error}=await supabase.auth.getUser();
+  console.log(user);
+  const {data:orders,error:ordererror}= await supabase.from("orders").select("*").eq('waiter_id',user.user.id);
+  setmockOrders(orders)
+  console.log(mockOrders);
+  
+  }
+
+  useEffect(() => {
+    initializeOrder();
+  }, []);
+  
+
+ 
+  
+  
+
+
   return (
     <>
       <div className={styles.billContainer}>
         <Box className={styles.orderBox}>
           {mockOrders.map((order) => (
-            <CustomChip name={order.order_id} price={order.price} />
+            <CustomChip name={"Order#"+order.order_id} price={order.total_amount} />
           ))}
         </Box>
         <Box className={styles.box}>
