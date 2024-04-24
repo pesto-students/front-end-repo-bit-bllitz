@@ -8,11 +8,12 @@ import Link from "next/link";
 import styles from "../auth.module.scss";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { supabase } from "../../../supabase/supabase";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/loading/Loading";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
+import { login } from "@/app/api/auth/actions";
+import { useAppContext } from "@/context";
 
 const Signin = () => {
   const [loading, setLoading] = useState(false);
@@ -20,14 +21,8 @@ const Signin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-  const userState = useSelector((state) => state.auth);
-  const { user = {} } = userState;
-  useEffect(() => {
-    if (Object.keys(user).length > 0) {
-      router.push("/dashboard");
-    }
-  }, []);
-  const dispatch = useDispatch();
+  const { setUser } = useAppContext();
+
   const handleSignIn = async (e) => {
     e.preventDefault();
     if (email.length < 4 || password.length < 4) {
@@ -35,23 +30,15 @@ const Signin = () => {
     }
     try {
       setLoading(true);
-
-      const { data: dataSupabase, error } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-      if (error) return setError("Sorry! something went wrong.");
-      console.log("data in signin supabase", dataSupabase);
-      // if (dataSupabase) setLoading(false);
-      if (dataSupabase) {
+      const { data, error } = await login({ email, password });
+      if (error) {
+        console.log("error in signin", error);
+      } else {
+        setUser(data.user);
+        console.log(data.user,'signin data');
         router.push("/dashboard");
-        router.refresh();
-
-        dispatch(setUserData(dataSupabase.user));
-        const { user, session } = dataSupabase;
-        console.log("user in signin supabase", user);
       }
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       console.log(error.message);

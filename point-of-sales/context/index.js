@@ -1,5 +1,6 @@
 "use client";
 
+import { getUser } from "@/app/api/auth/actions";
 import Sidebar from "@/components/auth/sidebar/Sidebar";
 import Loading from "@/components/loading/Loading";
 import Sidepanel from "@/components/sidepanel/Sidepanel";
@@ -17,38 +18,22 @@ const { createContext, useState, useContext, useEffect } = require("react");
 const AppContext = createContext(undefined);
 
 export function AppWrapper({ children }) {
-  const [users, setUser] = useState(undefined);
+  const [user, setUser] = useState(undefined);
   const [loading, setLoading] = useState(false);
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
   //fetchUser when the app launches
-  const userData = store.getState();
-  const { auth = {} } = userData;
-  const { user = {} } = auth;
-  const { id:userID = "" } = user ;
-  useEffect(() => {
-    console.log("user in context effect", user);
-    // console.log("store in context effect", );
-  }, [user, user]);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         setLoading(true);
-        const { data } = await supabase.auth.getUser();
-        console.log("user in context", data);
-        if (data.user) {
-          store.dispatch(setUserData(data.user));
-        }
-
-        if (data.session == null) {
-          console.log("There is no session");
-        }
-        // if (data) {
-        //   setUser(data.session.user);
-        // }
+        const { data, error } = await getUser();
+        console.log("user in context", data.user);
+        setUser(data.user);
+        setLoading(false);
       } catch (e) {
         // Handle error
       } finally {
@@ -59,7 +44,7 @@ export function AppWrapper({ children }) {
     fetchCurrentUser();
   }, []);
 
-  if (loading && !user) return <Loading />;
+  if (loading) return <Loading />;
   const persistor = persistStore(store);
 
   return (
@@ -73,7 +58,8 @@ export function AppWrapper({ children }) {
     >
       <Providers store={store}>
         <main>
-          {userID && <Sidepanel />}
+          {/* {JSON.stringify(user)} */}
+          {user && <Sidepanel />}
           <div style={{ width: "100%", height: "100%" }}>{children}</div>
         </main>
       </Providers>

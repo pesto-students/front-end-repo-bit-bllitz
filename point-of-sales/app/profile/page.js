@@ -26,6 +26,7 @@ import { useDispatch } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
 import { setSelectedTab } from "@/lib/redux/slices/sidePanelSlice";
 import Loading from "@/components/loading/Loading";
+import { signOut } from "../api/auth/actions";
 const page = () => {
   const style = {
     position: "absolute",
@@ -89,13 +90,14 @@ const page = () => {
     setSelectedIndex(index);
     switch (index) {
       case 3:
+        console.log("in logout");
         setLoading(true);
-        const signoutRes = await supabase.auth.signOut();
-        console.log("signout res", signoutRes);
-        dispatch(setUserData({}));
-        dispatch(setSelectedTab(0));
-        router.push("/auth/signin");
-        router.refresh();
+        const { data, error } = await signOut();
+        if (data) {
+          console.log("data in signout", data);
+          router.push("/auth/signin");
+          setUser(undefined);
+        }
 
         setLoading(false);
         break;

@@ -37,6 +37,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "@/lib/redux/slices/userSlice";
 import Loading from "@/components/loading/Loading";
+import { getUser } from "../api/auth/actions";
 // Register ChartJS components using ChartJS.register
 ChartJS.register(
   CategoryScale,
@@ -57,10 +58,11 @@ const Dashboard = () => {
   const { user = {} } = userState;
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    if (!user.id) {
-      router.push("/auth/signin");
-    }
-    if (user.id) {
+    const fetchUser = async () => {
+      return await getUser();
+    };
+    const user = fetchUser();
+    if (user) {
       setLoading(false);
     }
   }, []);
