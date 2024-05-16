@@ -23,9 +23,8 @@ import { supabase } from "../../supabase/supabase";
 import Progress from "@/components/progress/Progress";
 import { useAppContext } from "@/context";
 import { useDispatch } from "react-redux";
-import { setUserData } from "@/lib/redux/slices/userSlice";
-import { setSelectedTab } from "@/lib/redux/slices/sidePanelSlice";
 import Loading from "@/components/loading/Loading";
+import { resetState } from "@/lib/redux/slices/resetSlice";
 const page = () => {
   const style = {
     position: "absolute",
@@ -49,6 +48,8 @@ const page = () => {
     userId: "",
   });
   const [selectedIndex, setSelectedIndex] = useState(1);
+  const [deleteModal, setDelModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     gender: "", // Initialize gender as an empty string
     first_name: "",
@@ -60,7 +61,7 @@ const page = () => {
     pincode: "",
   });
   const getUserData = async () => {
-    setLoading(true);
+    // setLoading(true);
     const { data: userData, error } = await supabase.auth.getSession();
     // setUser(userData);
     console.log("userData in profile", userData);
@@ -84,7 +85,6 @@ const page = () => {
     getUserData();
   }, []);
   const dispatch = useDispatch();
-
   const handleListItemClick = async (event, index) => {
     setSelectedIndex(index);
     switch (index) {
@@ -92,8 +92,9 @@ const page = () => {
         setLoading(true);
         const signoutRes = await supabase.auth.signOut();
         console.log("signout res", signoutRes);
-        dispatch(setUserData({}));
-        dispatch(setSelectedTab(0));
+
+        dispatch(resetState());
+
         router.push("/auth/signin");
         router.refresh();
 
@@ -104,12 +105,6 @@ const page = () => {
         break;
     }
   };
-  const [deleteModal, setDelModal] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    console.log("selectedInd", selectedIndex);
-  }, [selectedIndex]);
 
   const getContent = () => {
     switch (selectedIndex) {
@@ -132,11 +127,6 @@ const page = () => {
       const { data: profiles, error } = await supabase.auth.admin.deleteUser(
         userData.user.id
       );
-      console.log("error", error);
-      console.log("datasup", profiles);
-      // setDelModal(false);
-      // await supabase.auth.signOut();
-      // router.push("/auth/signin");
     }
   };
   return (
