@@ -1,22 +1,28 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
+import {
+  Box,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Typography,
+} from "@mui/material";
 import { Dashboard, Fastfood, Receipt } from "@mui/icons-material";
 import styles from "./Sidepanel.module.scss";
 import { useRouter } from "next/navigation";
 import Logo from "../logo/Logo";
-import { Avatar, Badge, Button, Card, Typography } from "@mui/material";
 import { supabase } from "../../supabase/supabase";
-import { useAppContext } from "@/context";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedTab } from "@/lib/redux/slices/sidePanelSlice";
+import { setProfileData } from "@/lib/redux/slices/userSlice";
 const drawerWidth = 240;
 
 export default function Sidepanel() {
@@ -25,18 +31,27 @@ export default function Sidepanel() {
   const [selectedIndex, setSelectedIndex] = useState(panel);
   const [profileData, setProfile] = useState({});
   const router = useRouter();
-  const { user } = useAppContext();
-  const userId = user.session?.user?.id;
+  const userData = useSelector((state) => state.auth);
+  const { user = {}, profile = {} } = userData;
+  const { id: userId = "" } = user;
+  const { id: profileId = "" } = profile;
+  useEffect(()=>{
+    console.log('panel',panel);
+    console.log('menu',menuData[panel].href);
+    if(panel==selectedIndex){
+      router.push(menuData[panel].href)
+    }
+  },[])
   const getProfileDetails = async () => {
     let { data: profiles, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", userId);
     setProfile(profiles[0]);
-    console.log("profile data in sidepanel", profiles[0]);
+    dispatch(setProfileData(profiles[0]));
   };
   useEffect(() => {
-    if (user) {
+    if (user && !profileId) {
       getProfileDetails();
     }
   }, [user]);
@@ -55,14 +70,13 @@ export default function Sidepanel() {
     dispatch(setSelectedTab(index));
     setSelectedIndex(index);
     router.push(href);
-    console.log("href", href);
   };
+
   const handleProfile = () => {
     router.push("/profile");
   };
   return (
     <Box sx={{ display: "flex" }}>
-      {/* <CssBaseline /> */}
       <Drawer
         variant="permanent"
         sx={{
@@ -118,7 +132,7 @@ export default function Sidepanel() {
                   Z
                 </Avatar>
                 <Typography variant="h6" className={styles.profileName}>
-                  {profileData.fullname}
+                  {profile.fullname}
                 </Typography>
                 <Typography variant="body2" className={styles.desig}>
                   {profileData.role}

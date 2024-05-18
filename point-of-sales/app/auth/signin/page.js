@@ -11,6 +11,8 @@ import { useState } from "react";
 import { supabase } from "../../../supabase/supabase";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/loading/Loading";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "@/lib/redux/slices/userSlice";
 
 const Signin = () => {
   const [loading, setLoading] = useState(false);
@@ -18,17 +20,14 @@ const Signin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const userState = useSelector((state) => state.auth);
+  const { user = {} } = userState;
   useEffect(() => {
-    const fetchSession = async () => {
-      const signinSession = await supabase.auth.getSession();
-      console.log("signing data", signinSession);
-      if (signinSession?.data?.session) {
-        router.push("/dashboard");
-      }
-    };
-    fetchSession();
+    if (Object.keys(user).length > 0) {
+      router.push("/dashboard");
+    }
   }, []);
-
+  const dispatch = useDispatch();
   const handleSignIn = async (e) => {
     e.preventDefault();
     if (email.length < 4 || password.length < 4) {
@@ -46,13 +45,15 @@ const Signin = () => {
       console.log("data in signin supabase", dataSupabase);
       // if (dataSupabase) setLoading(false);
       if (dataSupabase) {
-        router.refresh();
         router.push("/dashboard");
+        router.refresh();
+
+        dispatch(setUserData(dataSupabase.user));
         const { user, session } = dataSupabase;
         console.log("user in signin supabase", user);
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       console.log(error.message);
     }
   };
@@ -60,7 +61,7 @@ const Signin = () => {
   return (
     <>
       {loading ? (
-        <Loading/>
+        <Loading />
       ) : (
         <div>
           <Sidebar

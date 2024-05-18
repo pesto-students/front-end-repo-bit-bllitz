@@ -1,163 +1,251 @@
-"use client"; // This is a client component 👈🏽
+"use client";
+import React, { useState } from "react";
+import styles from "./bills.module.scss";
 import {
   Box,
   Divider,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Grid,
+  Modal,
+  Radio,
+  RadioGroup,
   Typography,
-  Table,
-  TableContainer,
-  TableCell,
-  TableRow,
-  TableHead,
-  TableBody,
-  Chip,
 } from "@mui/material";
-import styles from "./bills.module.scss";
-import React, { useState } from "react";
-import CustomChip from "../../components/chip/CustomChip.js";
-import CustomButton from "@/components/button/CustomButton";
-import { supabase } from "../../supabase/supabase";
-import { useSelector} from "react-redux";
-import { useEffect,useState } from "react";
-
-
-
-
-// const mockOrders = [
-//   {
-//     order_id: "Order#35",
-//     price: "450Rs",
-//   },
-//   {
-//     order_id: "Order#34",
-//     price: "650Rs",
-//   },
-//   {
-//     order_id: "Order#33",
-//     price: "350Rs",
-//   },
-// ];
-
-const currentOrderDetails = {
-  order_id: " Order#35",
-  status: "Active",
-  guest: {
-    name: "Kate Willson",
-    totalGuests: 2,
-    tableNumber: 5,
-    paymentType: "Cash",
-  },
-  total_amount: "900Rs",
-  orders: [
-    {
-      quantity: 1,
-      price: "450Rs",
-      name: "Hamburger",
-    },
-    {
-      quantity: 1,
-      price: "450Rs",
-      name: "Pizza",
-    },
-  ],
-};
-
-
+import BillsCard from "@/components/billsCard/BillsCard";
 const Bills = () => {
-  const [mockOrders, setmockOrders] = useState([{
-    order_id: "",
-    total_amount:"" 
-  }]);
-  const initializeOrder= async ()=>{
-    const {data:user,error:error}=await supabase.auth.getUser();
-  console.log(user);
-  const {data:orders,error:ordererror}= await supabase.from("orders").select("*").eq('waiter_id',user.user.id);
-  setmockOrders(orders)
-  console.log(mockOrders);
-  
-  }
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [paymentValue, setValue] = useState("");
+  const [paymentDone, setPaymentStatus] = useState(false);
+  const currentOrderDetails = {
+    order_id: " Order#35",
+    status: "Active",
+    guest: {
+      name: "Kate Willson",
+      totalGuests: 2,
+      tableNumber: 5,
+      paymentType: "Cash",
+    },
+    total_amount: "900Rs",
+    orders: [
+      {
+        img: "/images/burger.png",
+        quantity: 1,
+        price: 450,
+        name: "Hamburger",
+      },
+      {
+        img: "/images/burger.png",
+        quantity: 1,
+        price: 450,
+        name: "Pizza",
+      },
+      {
+        img: "/images/burger.png",
+        quantity: 1,
+        price: 450,
+        name: "Hamburger",
+      },
+      {
+        img: "/images/burger.png",
+        quantity: 1,
+        price: 450,
+        name: "Pizza",
+      },
+      {
+        img: "/images/burger.png",
+        quantity: 1,
+        price: 450,
+        name: "Hamburger",
+      },
+      {
+        img: "/images/burger.png",
+        quantity: 1,
+        price: 450,
+        name: "Pizza",
+      },
+      {
+        img: "/images/burger.png",
+        quantity: 1,
+        price: 450,
+        name: "Hamburger",
+      },
+      {
+        img: "/images/burger.png",
+        quantity: 1,
+        price: 450,
+        name: "Pizza",
+      },
+    ],
+  };
 
-  useEffect(() => {
-    initializeOrder();
-  }, []);
-  
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 4,
+    borderRadius: 5,
+  };
+  const handlePaymentMethod = () => {
+    console.log(paymentValue);
+    switch (paymentValue) {
+      case "UPI":
+        //upi logic
+        setPaymentModal(false);
 
- 
-  
-  
+        break;
+      case "Cash":
+        setPaymentStatus(true);
+        setPaymentModal(false);
 
-
+        break;
+      default:
+        break;
+    }
+  };
+  const handleChange = (eve) => {
+    setValue(eve.target.value);
+  };
   return (
-    <>
-      <Header padding={"1rem 2.5rem"} title={"Bills"} />
-      <div className={styles.billContainer}>
-        <Box className={styles.orderBox}>
-          {mockOrders.map((order) => (
-            <CustomChip name={"Order#"+order.order_id} price={order.total_amount} />
-          ))}
-        </Box>
-        <Box className={styles.box}>
-          <div>
-            <Typography variant="subtitle1" fontWeight={"500"}>
-              Payment History
-            </Typography>
-            <Typography variant="h5" className={styles.section}>
-              {currentOrder.order_id}
-              <Chip
-                className={styles.statusButton}
-                variant="contained"
-                label={currentOrder.status}
-              />
-              <Divider className={styles.divider} />
-            </Typography>
-            <Typography variant="h6" className={styles.section}>
+    <div className={styles.bills}>
+      <Grid container>
+        <Grid item md={6}>
+          <Typography className={styles.billsHead}>Bills</Typography>
+          {
+            [1,2,3].map((item)=>(
+              <BillsCard/>
+            ))
+          }
+          <BillsCard />
+        </Grid>
+        <Grid item md={5} className={styles.details}>
+          <div className={styles.header}>
+            <Typography className={styles.orderNo}>Order #35</Typography>
+            <div className={paymentDone ? styles.completed : styles.active}>
+              {paymentDone ? "Completed" : "Active"}
+            </div>
+          </div>
+          <Divider />
+          <div className={styles.detailsContainer}>
+            <Typography variant="body2" className={styles.head}>
               Details
             </Typography>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow className={styles.tableHeader}>
-                    <TableCell>Customer Name</TableCell>
-                    <TableCell align="right">Guest No.</TableCell>
-                    <TableCell align="right">Table No.</TableCell>
-                    <TableCell align="right">Payment</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow className={styles.row}>
-                    <TableCell component="th" scope="row">
-                      {currentOrder.guest.name}
-                    </TableCell>
-                    <TableCell align="right">
-                      {currentOrder.guest.totalGuests}
-                    </TableCell>
-                    <TableCell align="right">
-                      {currentOrder.guest.tableNumber}
-                    </TableCell>
-                    <TableCell align="right">
-                      {currentOrder.guest.paymentType}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Typography variant="h6" className={styles.section}>
-              Order Info
-            </Typography>
-            {currentOrder.orders.map((order) => (
-              <CustomChip
-                key={order.order_id}
-                name={`${order.quantity} x ${order.name}`}
-                price={order.price}
-                onClick={undefined}
-              />
-            ))}
+            <div className={styles.customerDets}>
+              <div item md={2}>
+                <Typography className={styles.title}>Table</Typography>
+                <Typography className={styles.sub}>
+                  {currentOrderDetails.guest.tableNumber}
+                </Typography>
+              </div>
+              <div item md={2}>
+                <Typography className={styles.title}>Guests</Typography>
+                <Typography className={styles.sub}>
+                  {currentOrderDetails.guest.totalGuests}
+                </Typography>
+              </div>
+              <div item md={5}>
+                <Typography className={styles.title}>Customer</Typography>
+                <Typography className={styles.sub}>
+                  {currentOrderDetails.guest.name}
+                </Typography>
+              </div>
+              <div item md={3}>
+                <Typography className={styles.title}>Payment</Typography>
+                <Typography className={styles.sub}>
+                  {currentOrderDetails.total_amount}
+                </Typography>
+              </div>
+            </div>
+            <div className={styles.orderInfo}>
+              <Typography className={styles.head}>Order Info</Typography>
+              <div className={styles.orderTable}>
+                <Typography className={styles.subs}>Item</Typography>
+                <Typography className={styles.subs}>Price</Typography>
+              </div>
+
+              <div className={styles.scrollable}>
+                {currentOrderDetails.orders.map((item) => (
+                  <Grid container className={styles.orderCard}>
+                    <Grid item md={7} className={styles.nameContainer}>
+                      <div className={styles.imgContainer}>
+                        <img src={item.img} />
+                      </div>
+                      <Typography className={styles.foodItem}>
+                        {" "}
+                        {item.quantity}x{item.name}
+                      </Typography>
+                    </Grid>
+                    <Grid item md={5} className={styles.price}>
+                      Rs {item.quantity * item.price}
+                    </Grid>
+                  </Grid>
+                ))}
+              </div>
+            </div>
+            <div className={styles.bottomBar}>
+              <div className={styles.grandtotal}>
+                <Typography className={styles.total}>Total</Typography>
+                <Typography className={styles.total}>
+                  {currentOrderDetails.total_amount}
+                </Typography>
+              </div>
+              <Button
+                className={paymentDone ? styles.paidBtn : styles.chargeBtn}
+                onClick={() => setPaymentModal(true)}
+              >
+                {paymentDone
+                  ? `Successfully Paid ${currentOrderDetails.total_amount}`
+                  : `Charge customer Rs ${currentOrderDetails.total_amount}`}
+              </Button>
+            </div>
           </div>
-          <CustomButton
-            text={`Charge Customer ${currentOrder.total_amount}`}
-          />
-        </Box>
-      </div>
-    </>
+        </Grid>
+      </Grid>
+      {paymentModal && (
+        <Modal
+          open={paymentModal}
+          onClose={() => setPaymentModal(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+          className={styles.paymentModal}
+        >
+          <Box sx={style}>
+            <FormControl>
+              <FormLabel
+                className={styles.heading}
+                id="demo-radio-buttons-group-label"
+              >
+                Choose Payment method
+              </FormLabel>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="UPI"
+                name="radio-buttons-group"
+                onChange={handleChange}
+              >
+                <FormControlLabel value="UPI" control={<Radio />} label="UPI" />
+                <FormControlLabel
+                  value="Cash"
+                  control={<Radio />}
+                  label="Cash"
+                />
+              </RadioGroup>
+            </FormControl>
+            <Button
+              className={styles.btn}
+              onClick={() => handlePaymentMethod()}
+            >
+              Apply
+            </Button>
+          </Box>
+        </Modal>
+      )}
+    </div>
   );
 };
 

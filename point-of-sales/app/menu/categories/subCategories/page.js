@@ -26,11 +26,13 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Link from "next/link";
 import { ArrowRightAlt, ChevronRight } from "@mui/icons-material";
-import {store} from "@/lib/redux/store.js";
+import { store } from "@/lib/redux/store.js";
+import Loading from "@/components/loading/Loading.js";
 
 const SubCategories = () => {
-  const subCateg=useSelector((state)=>state.sidePanel.subCategory)
+  const subCateg = useSelector((state) => state.sidePanel.subCategory);
   const [openModal, setOpenModal] = useState(false);
+  const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const category_id = searchParams.get("category_id");
   const [quantity, setQuantity] = useState(1);
@@ -41,9 +43,8 @@ const SubCategories = () => {
     quantity: "",
     price: "",
   });
-  const { push } = useRouter();
+  const router = useRouter();
   const [foodItems, setFoodItems] = useState([]);
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const { setUser } = useAppContext();
   useEffect(() => {
@@ -133,53 +134,65 @@ const SubCategories = () => {
   };
   return (
     <>
-      <Header padding={"1rem 2.5rem"} title={"Food Items"} />
-      <div className={styles.breadcrumbs}>
-        <Link className={styles.links} href={"/menu/categories"}>
-          Categories
-        </Link>
-        <ChevronRight />
-        <div className={styles.links2}>{subCateg}</div>
-      </div>
-      <Grid container className={styles.menu}>
-        {foodItems.map((data) => (
-          <Grid item md={3} className={styles.SubCategories}>
-            <ActionAreaCard data={data} onClick={onClickHandle} />
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <Header padding={"1rem 2.5rem"} title={"Food Items"} />
+          <div className={styles.breadcrumbs}>
+            <Link className={styles.links} href={"/menu/categories"}>
+              Categories
+            </Link>
+            <ChevronRight />
+            <div className={styles.links2}>{subCateg}</div>
+          </div>
+          <Grid container className={styles.menu}>
+            {foodItems.map((data) => (
+              <Grid item md={3} className={styles.SubCategories}>
+                <ActionAreaCard data={data} onClick={onClickHandle} />
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
-      <Modal open={openModal} onClose={toggleDrawer(false)}>
-        <Card sx={{ maxWidth: 400 }} className={styles.modal}>
-          <CardMedia component="img" height="199" image={foodData.image_url} />
-          <CardContent className={styles.cardContent}>
-            <CardHeader className={styles.title} title={foodData.name} />
-            <div className={styles.price}>₹ {quantity * foodData.price}</div>
-          </CardContent>
-          <CardActions disableSpacing className={styles.actions}>
-            <ButtonGroup variant="outlined" className={styles.btnGroup}>
-              <Button
-                className={styles.quantityCount}
-                onClick={() => handleQuantity("decrease")}
-                disableRipple
-              >
-                -
-              </Button>
-              <Button className={styles.quantity}>{quantity}</Button>
-              <Button
-                className={styles.quantityCount}
-                disableRipple
-                onClick={() => handleQuantity("increase")}
-              >
-                +
-              </Button>
-            </ButtonGroup>
-            <CustomButton
-              text={"Add to cart"}
-              onClick={(e) => onApplyAddToCart(e, foodData)}
-            />
-          </CardActions>
-        </Card>
-      </Modal>
+          <Modal open={openModal} onClose={toggleDrawer(false)}>
+            <Card sx={{ maxWidth: 400 }} className={styles.modal}>
+              <CardMedia
+                component="img"
+                height="199"
+                image={foodData.image_url}
+              />
+              <CardContent className={styles.cardContent}>
+                <CardHeader className={styles.title} title={foodData.name} />
+                <div className={styles.price}>
+                  ₹ {quantity * foodData.price}
+                </div>
+              </CardContent>
+              <CardActions disableSpacing className={styles.actions}>
+                <ButtonGroup variant="outlined" className={styles.btnGroup}>
+                  <Button
+                    className={styles.quantityCount}
+                    onClick={() => handleQuantity("decrease")}
+                    disableRipple
+                  >
+                    -
+                  </Button>
+                  <Button className={styles.quantity}>{quantity}</Button>
+                  <Button
+                    className={styles.quantityCount}
+                    disableRipple
+                    onClick={() => handleQuantity("increase")}
+                  >
+                    +
+                  </Button>
+                </ButtonGroup>
+                <CustomButton
+                  text={"Add to cart"}
+                  onClick={(e) => onApplyAddToCart(e, foodData)}
+                />
+              </CardActions>
+            </Card>
+          </Modal>
+        </>
+      )}
     </>
   );
 };
