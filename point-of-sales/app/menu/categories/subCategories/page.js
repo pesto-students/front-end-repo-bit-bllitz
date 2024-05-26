@@ -43,7 +43,7 @@ const SubCategories = () => {
     quantity: "",
     price: "",
   });
-  const { push } = useRouter();
+  const router = useRouter();
   const [foodItems, setFoodItems] = useState([]);
   const dispatch = useDispatch();
   const { setUser } = useAppContext();

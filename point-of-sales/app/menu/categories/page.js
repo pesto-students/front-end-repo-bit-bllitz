@@ -3,20 +3,25 @@
 import React, { useState, useCallback, useEffect } from "react";
 import ActionAreaCard from "../../../components/card/ActionAreaCard.js";
 import styles from "../menu.module.scss";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import CustomModal from "@/components/modal/CustomModal.js";
 import CustomInput from "@/components/auth/input/CustomInput.js";
 import CustomButton from "@/components/button/CustomButton.js";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../supabase/supabase.js";
-import { useAppContext } from "@/context/index.js";
 import Header from "@/components/header/Header.js";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setSubcategory } from "@/lib/redux/slices/sidePanelSlice.js";
 import Loading from "@/components/loading/Loading.js";
 
+import { addTableData } from "@/lib/redux/slices/tableSlice.js";
+
+
 const Categories = () => {
-  const [openModal, setOpenModal] = useState(false);
+  const tableDetails = useSelector((state) => state.table.tableDetails);
+  const [openModal, setOpenModal] = useState(
+    () => Object.keys(tableDetails).length == 0
+  );
   const { push } = useRouter();
   const [categories, setCategories] = useState([]);
   const [values, setValues] = useState({
@@ -32,6 +37,10 @@ const Categories = () => {
       [name]: value,
     }));
   };
+  const handleTableData = () => {
+    dispatch(addTableData(values));
+    setOpenModal(false)
+  };
 
   const getCategories = useCallback(async () => {
     try {
@@ -46,7 +55,9 @@ const Categories = () => {
 
       if (category) {
         setCategories(category);
+
         setLoading(false)
+
       }
     } catch (error) {
       alert("Error loading user data!");
@@ -87,17 +98,25 @@ const Categories = () => {
               placeholder={"Enter number of Guests"}
               onChange={handleUserData}
               value={values.totalGuests}
+
+              type={"number"}
+
               inputName={"totalGuests"}
             />
             <CustomInput
               placeholder={"Enter table number"}
               onChange={handleUserData}
               value={values.assignedTable}
+
+              type={"number"}
+
               inputName={"assignedTable"}
             />
             <CustomButton
               text={"Assign Table"}
-              onClick={() => setOpenModal(false)}
+
+              onClick={() => handleTableData()}
+
             />
           </CustomModal>
         </>
