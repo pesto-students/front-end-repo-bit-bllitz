@@ -23,8 +23,10 @@ import { supabase } from "../../supabase/supabase";
 import Progress from "@/components/progress/Progress";
 import { useAppContext } from "@/context";
 import { useDispatch } from "react-redux";
+
 import Loading from "@/components/loading/Loading";
 import { resetState } from "@/lib/redux/slices/resetSlice";
+
 const page = () => {
   const style = {
     position: "absolute",
@@ -61,7 +63,9 @@ const page = () => {
     pincode: "",
   });
   const getUserData = async () => {
+
     // setLoading(true);
+
     const { data: userData, error } = await supabase.auth.getSession();
     // setUser(userData);
     console.log("userData in profile", userData);
@@ -85,6 +89,7 @@ const page = () => {
     getUserData();
   }, []);
   const dispatch = useDispatch();
+
   const handleListItemClick = async (event, index) => {
     setSelectedIndex(index);
     switch (index) {
@@ -92,6 +97,7 @@ const page = () => {
         setLoading(true);
         const signoutRes = await supabase.auth.signOut();
         console.log("signout res", signoutRes);
+
 
         dispatch(resetState());
 
@@ -104,7 +110,12 @@ const page = () => {
       default:
         break;
     }
-  };
+  }
+
+  useEffect(() => {
+    console.log("selectedInd", selectedIndex);
+  }, [selectedIndex]);
+
 
   const getContent = () => {
     switch (selectedIndex) {

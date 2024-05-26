@@ -35,6 +35,7 @@ export default function Sidepanel() {
   const { user = {}, profile = {} } = userData;
   const { id: userId = "" } = user;
   const { id: profileId = "" } = profile;
+
   useEffect(()=>{
     console.log('panel',panel);
     console.log('menu',menuData[panel].href);
@@ -42,6 +43,7 @@ export default function Sidepanel() {
       router.push(menuData[panel].href)
     }
   },[])
+
   const getProfileDetails = async () => {
     let { data: profiles, error } = await supabase
       .from("profiles")
@@ -49,6 +51,7 @@ export default function Sidepanel() {
       .eq("id", userId);
     setProfile(profiles[0]);
     dispatch(setProfileData(profiles[0]));
+
   };
   useEffect(() => {
     if (user && !profileId) {

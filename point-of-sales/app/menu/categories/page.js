@@ -13,7 +13,9 @@ import Header from "@/components/header/Header.js";
 import { useDispatch, useSelector } from "react-redux";
 import { setSubcategory } from "@/lib/redux/slices/sidePanelSlice.js";
 import Loading from "@/components/loading/Loading.js";
+
 import { addTableData } from "@/lib/redux/slices/tableSlice.js";
+
 
 const Categories = () => {
   const tableDetails = useSelector((state) => state.table.tableDetails);
@@ -53,7 +55,9 @@ const Categories = () => {
 
       if (category) {
         setCategories(category);
-        setLoading(false);
+
+        setLoading(false)
+
       }
     } catch (error) {
       alert("Error loading user data!");
@@ -94,19 +98,25 @@ const Categories = () => {
               placeholder={"Enter number of Guests"}
               onChange={handleUserData}
               value={values.totalGuests}
+
               type={"number"}
+
               inputName={"totalGuests"}
             />
             <CustomInput
               placeholder={"Enter table number"}
               onChange={handleUserData}
               value={values.assignedTable}
+
               type={"number"}
+
               inputName={"assignedTable"}
             />
             <CustomButton
               text={"Assign Table"}
+
               onClick={() => handleTableData()}
+
             />
           </CustomModal>
         </>
