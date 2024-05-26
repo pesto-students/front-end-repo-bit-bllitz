@@ -110,10 +110,7 @@ const page = () => {
       default:
         break;
     }
-  };
-
-  const [deleteModal, setDelModal] = useState(false);
-  const [loading, setLoading] = useState(true);
+  }
 
   useEffect(() => {
     console.log("selectedInd", selectedIndex);
