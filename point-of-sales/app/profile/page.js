@@ -184,19 +184,25 @@ const page = () => {
                   <ListItemButton
                     selected={selectedIndex == 1}
                     onClick={(event) => handleListItemClick(event, 1)}
-                    className={styles.listBtn}
+                    className={`${styles.listBtn} ${
+                      selectedIndex == 1 && styles.activeTab
+                    }`}
                   >
                     Personal information
                   </ListItemButton>
                   <ListItemButton
-                    className={styles.listBtn}
+                    className={`${styles.listBtn} ${
+                      selectedIndex == 2 && styles.activeTab
+                    }`}
                     selected={selectedIndex == 2}
                     onClick={(event) => handleListItemClick(event, 2)}
                   >
                     Login and Password
                   </ListItemButton>
                   <ListItemButton
-                    className={styles.listBtn}
+                    className={`${styles.listBtn} ${
+                      selectedIndex == 3 && styles.activeTab
+                    }`}
                     selected={selectedIndex == 3}
                     onClick={(event) => handleListItemClick(event, 3)}
                   >
