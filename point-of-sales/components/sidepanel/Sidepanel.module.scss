@@ -8,25 +8,24 @@
       padding: 0.6rem 1rem;
       margin-bottom: 1rem;
       color: #000;
-      &:global(
-          .mui-16ac5r2-MuiButtonBase-root-MuiListItemButton-root.Mui-selected
-        ) {
-        background-color: #ffd049;
-        border-radius: 10px;
-      }
       .icon {
         color: #000;
-       >span>span{
-        background-color: #c3040a ;
-        font-family: 'Gilory-SemiBold';
-       }
+        > span > span {
+          background-color: #c3040a;
+          font-family: "Gilory-SemiBold";
+        }
       }
       .tabTxt {
         font-size: 1rem;
         font-family: "Gilory-SemiBold";
       }
-    }.tabBtn:active{
+    }
+    .tabBtn:hover {
+      border-radius: 10px;
+    }
+    .tabActiveBtn {
       background-color: #ffd049;
+      border-radius: 10px;
     }
   }
   .profileSection {
@@ -54,7 +53,7 @@
         margin: 0.1rem 0;
         text-align: center;
       }
-      .desig{
+      .desig {
         text-align: center;
       }
       .profileBtn {

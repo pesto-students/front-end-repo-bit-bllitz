@@ -98,7 +98,7 @@ export default function Sidepanel() {
                 <ListItemButton
                   onClick={() => handleRoute(text.href, index)}
                   selected={selectedIndex === index}
-                  className={styles.tabBtn}
+                  className={`${styles.tabBtn} ${selectedIndex === index && styles.tabActiveBtn}`}
                 >
                   {text.href == "/cart" ? (
                     <ListItemIcon className={styles.icon}>
