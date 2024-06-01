@@ -38,9 +38,9 @@ export default function Sidepanel() {
   useEffect(()=>{
     console.log('panel',panel);
     console.log('menu',menuData[panel].href);
-    if(panel==selectedIndex){
-      router.push(menuData[panel].href)
-    }
+    // if(panel==selectedIndex){
+    //   router.push(menuData[panel].href)
+    // }
   },[])
   const getProfileDetails = async () => {
     let { data: profiles, error } = await supabase
