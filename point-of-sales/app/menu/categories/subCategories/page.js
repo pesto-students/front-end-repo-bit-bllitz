@@ -47,18 +47,7 @@ const SubCategories = () => {
   const [foodItems, setFoodItems] = useState([]);
   const dispatch = useDispatch();
   const { setUser } = useAppContext();
-  useEffect(() => {
-    const fetchSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      console.log("categories data", data);
-      if (data.session == null) {
-        router.push("/auth/signin");
-      } else {
-        setUser(data);
-      }
-    };
-    fetchSession();
-  }, []);
+
   const getFoodItems = useCallback(async () => {
     try {
       setLoading(true);

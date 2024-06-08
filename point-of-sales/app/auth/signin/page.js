@@ -3,7 +3,7 @@
 import CustomInput from "@/components/auth/input/CustomInput";
 import Sidebar from "@/components/auth/sidebar/Sidebar";
 import CustomButton from "@/components/button/CustomButton";
-import { Typography } from "@mui/material";
+import { Snackbar, Typography } from "@mui/material";
 import Link from "next/link";
 import styles from "../auth.module.scss";
 import React, { useEffect } from "react";
@@ -16,6 +16,8 @@ import { setUserData } from "@/lib/redux/slices/userSlice";
 
 const Signin = () => {
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ visible: false, msg: " " });
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -34,27 +36,37 @@ const Signin = () => {
       return alert("PLease enter a valid email and password");
     }
     try {
-      setLoading(true);
-
       const { data: dataSupabase, error } =
         await supabase.auth.signInWithPassword({
           email,
           password,
         });
-      if (error) return setError("Sorry! something went wrong.");
-      console.log("data in signin supabase", dataSupabase);
-      // if (dataSupabase) setLoading(false);
-      if (dataSupabase) {
-        router.push("/dashboard");
-        router.refresh();
+      if (error) {
+        console.log(error.message, "error in signin");
+        setError("Sorry! something went wrong.");
+        setLoading(false);
+        setToast({
+          visible: true,
+          msg: error.message,
+        });
+      } else {
+        setLoading(true);
 
-        dispatch(setUserData(dataSupabase.user));
-        const { user, session } = dataSupabase;
-        console.log("user in signin supabase", user);
+        // if (dataSupabase)
+        if (dataSupabase) {
+          router.push("/dashboard");
+          console.log("in supabase");
+          router.refresh();
+
+          dispatch(setUserData(dataSupabase.user));
+          const { user, session } = dataSupabase;
+          console.log("user in signin supabase", user);
+        }
       }
     } catch (error) {
-      setLoading(false);
       console.log(error.message);
+    } finally {
+      setLoading(false); // Ensure loading is set to false in the finally block
     }
   };
 
@@ -88,6 +100,12 @@ const Signin = () => {
               <Link href={"/auth/reset"}>Forgot Password?</Link>
             </Typography>
           </Sidebar>
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            open={toast.visible}
+            onClose={() => setToast({ visible: false, msg: "" })}
+            message={toast.msg}
+          />
         </div>
       )}
     </>

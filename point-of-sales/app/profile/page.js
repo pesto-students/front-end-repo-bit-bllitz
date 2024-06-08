@@ -49,6 +49,10 @@ const page = () => {
   });
   const [selectedIndex, setSelectedIndex] = useState(1);
   const [deleteModal, setDelModal] = useState(false);
+  const [orderData, setOrderData] = useState({
+    totalAmount: 0,
+    totalOrders: 0,
+  });
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     gender: "", // Initialize gender as an empty string
@@ -92,7 +96,6 @@ const page = () => {
         setLoading(true);
         const signoutRes = await supabase.auth.signOut();
         console.log("signout res", signoutRes);
-
         dispatch(resetState());
 
         router.push("/auth/signin");
@@ -129,6 +132,32 @@ const page = () => {
       );
     }
   };
+  const getWaiterSales = async () => {
+    const { data: userData, error: userError } =
+      await supabase.auth.getSession();
+
+    const userId = userData.session.user.id;
+
+    const { data: orderData, error: orderError } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("waiter_id", userId);
+console.log(orderData,'orderData');
+    if (orderData.length > 0) {
+      const totalAmount = orderData.reduce(
+        (sum, order) => sum + (order.total_amount || 0),
+        0
+      );
+      setOrderData({
+        totalAmount: totalAmount,
+        totalOrders: orderData.length,
+      });
+    }
+  };
+
+  useEffect(() => {
+    getWaiterSales();
+  }, []);
   return (
     <>
       {loading ? (
@@ -164,15 +193,15 @@ const page = () => {
                 <Grid container className={styles.workData}>
                   <Grid item md={6} sm={6} xs={12} className={styles.income}>
                     <Typography variant="h6" className={styles.main}>
-                      77,551
+                      {orderData.totalAmount}
                     </Typography>
                     <Typography variant="body2" className={styles.sub}>
-                      Income
+                      Total Sales
                     </Typography>
                   </Grid>
                   <Grid item md={6} sm={6} xs={12} className={styles.orders}>
                     <Typography variant="h6" className={styles.main}>
-                      50
+                      {orderData.totalOrders}
                     </Typography>
                     <Typography variant="body2" className={styles.sub}>
                       Orders

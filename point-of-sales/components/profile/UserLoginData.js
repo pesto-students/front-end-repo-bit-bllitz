@@ -10,6 +10,7 @@ const UserLoginData = ({ setFormData, formData }) => {
   const router = useRouter();
   const [resetPassword, setResetPassword] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isError, setError] = useState(false);
   const [modal, setModal] = useState(false);
 
   const handleChange = (event) => {
@@ -42,9 +43,13 @@ const UserLoginData = ({ setFormData, formData }) => {
       const { data, error } = await supabase.auth.resetPasswordForEmail(
         user.email,
         {
-          redirectTo: `${location.origin}/confirm`,
+          redirectTo: `${window.location.href}/confirm`,
         }
       );
+      if (error) {
+        setError(true);
+      }
+
       console.log("resetData", data);
       setSuccess(true);
     } catch (error) {}
@@ -99,6 +104,11 @@ const UserLoginData = ({ setFormData, formData }) => {
             <div className={styles.password}>
               <span>Success! </span>Reset link has been sent to your registered
               e-mail address
+            </div>
+          )}
+          {isError && (
+            <div className={styles.password}>
+              <span className={styles.error}>Error! </span> Rate limit Exceeded
             </div>
           )}
         </Grid>
