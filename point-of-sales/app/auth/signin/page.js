@@ -29,6 +29,7 @@ const Signin = () => {
       router.push("/dashboard");
     }
   }, []);
+  const [btnLoading, setBtnLoading] = useState(false);
   const dispatch = useDispatch();
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -36,12 +37,14 @@ const Signin = () => {
       return alert("PLease enter a valid email and password");
     }
     try {
+      setBtnLoading(true);
       const { data: dataSupabase, error } =
         await supabase.auth.signInWithPassword({
           email,
           password,
         });
       if (error) {
+        setBtnLoading(false);
         console.log(error.message, "error in signin");
         setError("Sorry! something went wrong.");
         setLoading(false);
@@ -50,6 +53,7 @@ const Signin = () => {
           msg: error.message,
         });
       } else {
+        setBtnLoading(false);
         setLoading(true);
 
         // if (dataSupabase)
@@ -66,6 +70,7 @@ const Signin = () => {
     } catch (error) {
       console.log(error.message);
     } finally {
+      setBtnLoading(false);
       setLoading(false); // Ensure loading is set to false in the finally block
     }
   };
@@ -95,7 +100,12 @@ const Signin = () => {
               onChange={(e) => setPassword(e.target.value)}
               value={password}
             />
-            <CustomButton text={"Sign in"} onClick={handleSignIn} />
+            <CustomButton
+              text={btnLoading ? "Signing in..." : "Sign in"}
+              disabled={btnLoading}
+              onClick={handleSignIn}
+              btnLoading={btnLoading}
+            />
             <Typography variant="body1" className={styles.link}>
               <Link href={"/auth/reset"}>Forgot Password?</Link>
             </Typography>
