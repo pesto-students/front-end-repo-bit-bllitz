@@ -9,16 +9,23 @@ const { v4: uuidv4 } = require("uuid");
 import orderSlice, { generateOrder } from "@/lib/redux/slices/orderSlice";
 import { store } from "@/lib/redux/store";
 import {
+  Box,
   Button,
   ButtonGroup,
   Card,
   CardMedia,
   Divider,
   Grid,
+  Modal,
   Typography,
 } from "@mui/material";
 import Delete from "@mui/icons-material/Delete";
-import { ArrowRightAlt, Cancel, ShoppingCart } from "@mui/icons-material";
+import {
+  ArrowRightAlt,
+  Cancel,
+  CheckCircleOutline,
+  ShoppingCart,
+} from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import {
   clearCart,
@@ -32,6 +39,22 @@ let cartItems = [];
 let orderId = 0;
 let cart = [];
 const page = () => {
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 4,
+    borderRadius: 5,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+  };
+
   cart = useSelector((state) => state.cart.items);
   console.log(cart);
   cartItems = cart;
@@ -39,6 +62,15 @@ const page = () => {
   const { user, setUser } = useAppContext();
   const [quantity, setQuantity] = useState(1);
   const [total, setTotal] = useState(0);
+  const [success, setSuccess] = useState(true);
+  useEffect(() => {
+    if (success) {
+      // setTimeout(() => {
+      //   setSuccess(false);
+      //   dispatch(clearCart());
+      // }, 2000);
+    }
+  }, [success]);
   const fetchUser = async () => {
     const { data, error } = await supabase.auth.getSession();
     console.log("data in cart", data);
@@ -83,17 +115,22 @@ const page = () => {
     // Dispatch action to generate order
 
     // Insert order into Supabase
-    const { error } = await supabase.from("orders").insert([
-      {
-        order_id: orderId,
-        waiter_id: user.user.id,
-        total_amount: total,
-        created_at: new Date(),
-        updated_at: null,
-        status: "active",
-      },
-    ]);
+    const { data, error } = await supabase
+      .from("orders")
+      .insert([
+        {
+          order_id: orderId,
+          waiter_id: user.user.id,
+          total_amount: total,
+          created_at: new Date(),
+          updated_at: null,
+          status: "active",
+        },
+      ])
+      .select();
+    console.log(data, " new data orders");
     if (error) {
+      console.log("error in data orders", error);
       throw error;
     }
     await updateOrderItem(orderId, user.user.id);
@@ -105,14 +142,21 @@ const page = () => {
     });
   };
   const insertFoodItem = async (orderId, food_id, quantity, waiter_id) => {
-    await supabase
+    const { data, error } = await supabase
       .from("order_items")
       .insert({
         order_id: orderId,
         food_id: food_id,
         quantity: 1,
         waiter_id: waiter_id,
-      });
+      })
+      .select();
+    if (error) {
+      console.log(error, "error in order");
+    } else {
+      console.log(data, "data in order insert");
+      setSuccess(true);
+    }
   };
   // const placeOrder = async () => {
   //   const { data: user, error: usererror } = await supabase.auth.getUser();
@@ -269,7 +313,7 @@ const page = () => {
                 variant="contained"
                 endIcon={<ArrowRightAlt />}
                 className={styles.order}
-                onClick={placeOrder}
+                onClick={() => placeOrder()}
               >
                 Place Order
               </Button>
@@ -282,6 +326,33 @@ const page = () => {
           <Typography className={styles.info}>Your cart is empty!</Typography>
         </div>
       )}
+      <Modal
+        open={success}
+        disableAutoFocus
+        disableRestoreFocus
+        onClose={() => setSuccess(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <CheckCircleOutline
+            sx={{
+              fontSize: "3rem",
+              marginBottom: "1rem",
+            }}
+            color={"success"}
+          />
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            textAlign={"center"}
+            fontFamily={"Gilory-SemiBold"}
+          >
+            Your order has been placed successfully
+          </Typography>
+        </Box>
+      </Modal>
     </div>
   );
 };

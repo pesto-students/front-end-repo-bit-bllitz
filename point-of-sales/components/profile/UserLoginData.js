@@ -43,7 +43,7 @@ const UserLoginData = ({ setFormData, formData }) => {
       const { data, error } = await supabase.auth.resetPasswordForEmail(
         user.email,
         {
-          redirectTo: `${window.location.href}/confirm`,
+          redirectTo: `${window.location.origin}/confirm`,
         }
       );
       if (error) {
