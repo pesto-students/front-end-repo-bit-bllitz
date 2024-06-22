@@ -1,6 +1,5 @@
 .analytics {
   padding: 1rem 1rem 0;
-  
 }
 .header {
   display: flex;
@@ -8,7 +7,7 @@
   padding: 0 0.5rem;
   .headerContent {
     .title {
-      font-family: "Gilory-SemiBold" !important;
+      font-weight: 600 !important;
     }
   }
 }
@@ -22,13 +21,13 @@
     }
     > div > div {
       padding: 0.5rem 0.8rem;
-      font-family: "Gilory-SemiBold";
+      font-weight: 500;
     }
     .menu {
       font-size: 0.8rem;
     }
     > li {
-      font-family: "Gilory-SemiBold";
+      font-weight: 500;
     }
   }
 }
@@ -51,8 +50,8 @@
   text-align: left;
   display: flex;
   width: 100%;
-  font-size: 0.9rem;
-  font-family: "Gilory-SemiBold";
+  font-size: 1rem;
+  font-weight: 600;
   padding-left: 0.5rem;
 }
 .lineChart {
@@ -127,7 +126,7 @@
       justify-content: space-between;
       width: 100%;
       .head {
-        font-family: "Gilory-SemiBold";
+        font-weight: 500;
         font-size: 1rem;
       }
     }
@@ -163,15 +162,15 @@
                 border-radius: 0.2rem;
                 background-color: #ffca40 !important;
                 color: #000;
-                font-family: "Gilory-SemiBold";
+                font-weight: 500;
               }
               .item {
-                font-family: "Gilory-SemiBold";
+                font-weight: 500;
               }
             }
           }
           .itemPrice {
-            font-family: "Gilory-SemiBold";
+            font-weight: 500;
           }
         }
       }
@@ -193,7 +192,7 @@
       justify-content: space-between;
       width: 100%;
       .head {
-        font-family: "Gilory-SemiBold";
+        font-weight: 500;
         font-size: 1rem;
       }
     }
@@ -220,18 +219,18 @@
               flex-direction: column;
               margin-left: 0.5rem;
               .item1 {
-                font-family: "Gilory-SemiBold";
+                font-weight: 500;
                 font-size: 1rem;
               }
               .item {
-                font-family: "Gilory";
+                font-weight:400;
                 font-size: 0.9rem;
                 color: grey;
               }
             }
           }
           .itemPrice {
-            font-family: "Gilory-SemiBold";
+            font-weight: 500;
           }
         }
       }

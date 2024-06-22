@@ -35,13 +35,11 @@ export default function Sidepanel() {
   const { user = {}, profile = {} } = userData;
   const { id: userId = "" } = user;
   const { id: profileId = "" } = profile;
-  useEffect(()=>{
-    console.log('panel',panel);
-    console.log('menu',menuData[panel].href);
+  useEffect(() => {
     // if(panel==selectedIndex){
     //   router.push(menuData[panel].href)
     // }
-  },[])
+  }, []);
   const getProfileDetails = async () => {
     let { data: profiles, error } = await supabase
       .from("profiles")
@@ -62,8 +60,8 @@ export default function Sidepanel() {
       primary: "Dashboard",
     },
     { href: "/menu/categories", icon: <Fastfood />, primary: "Food & Drinks" },
-    { href: "/bills", icon: <Receipt />, primary: "Bills" },
     { href: "/cart", icon: <ShoppingCartIcon />, primary: "Cart" },
+    { href: "/bills", icon: <Receipt />, primary: "Bills" },
   ];
   const dispatch = useDispatch();
   const handleRoute = (href, index) => {
@@ -98,7 +96,9 @@ export default function Sidepanel() {
                 <ListItemButton
                   onClick={() => handleRoute(text.href, index)}
                   selected={selectedIndex === index}
-                  className={`${styles.tabBtn} ${selectedIndex === index && styles.tabActiveBtn}`}
+                  className={`${styles.tabBtn} ${
+                    selectedIndex === index && styles.tabActiveBtn
+                  }`}
                 >
                   {text.href == "/cart" ? (
                     <ListItemIcon className={styles.icon}>

@@ -9,7 +9,7 @@ const LinearProgressComponent = ({ progress, color, title, data }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
-    }, 500); // Adjust the duration as needed
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);

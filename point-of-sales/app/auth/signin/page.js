@@ -1,4 +1,4 @@
-"use client"; // This is a client component 👈🏽
+"use client";
 
 import CustomInput from "@/components/auth/input/CustomInput";
 import Sidebar from "@/components/auth/sidebar/Sidebar";
@@ -17,17 +17,25 @@ import { setUserData } from "@/lib/redux/slices/userSlice";
 const Signin = () => {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ visible: false, msg: " " });
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
   const userState = useSelector((state) => state.auth);
   const { user = {} } = userState;
-  useEffect(() => {
-    if (Object.keys(user).length > 0) {
-      router.push("/dashboard");
+  const fetchUser = async () => {
+    const { data: user, error } = await supabase.auth.getUser();
+    console.log(user, "userData");
+    if (error) {
+      console.log(error, "error in signin");
+    } else {
+      console.log("user data", user.user.id);
+      if (user.user.id) {
+        router.push("/dashboard");
+      }
     }
+  };
+  useEffect(() => {
+    fetchUser();
   }, []);
   const [btnLoading, setBtnLoading] = useState(false);
   const dispatch = useDispatch();
@@ -46,7 +54,6 @@ const Signin = () => {
       if (error) {
         setBtnLoading(false);
         console.log(error.message, "error in signin");
-        setError("Sorry! something went wrong.");
         setLoading(false);
         setToast({
           visible: true,
@@ -106,9 +113,6 @@ const Signin = () => {
               onClick={handleSignIn}
               btnLoading={btnLoading}
             />
-            <Typography variant="body1" className={styles.link}>
-              <Link href={"/auth/reset"}>Forgot Password?</Link>
-            </Typography>
           </Sidebar>
           <Snackbar
             anchorOrigin={{ vertical: "top", horizontal: "right" }}

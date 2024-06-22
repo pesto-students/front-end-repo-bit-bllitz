@@ -19,8 +19,7 @@ const Categories = () => {
   const tableDetails = useSelector((state) => state.table.tableDetails);
   const [openModal, setOpenModal] = useState(
     () => Object.keys(tableDetails).length == 0
-  );
-  const { push } = useRouter();
+  );  const { push } = useRouter();
   const [categories, setCategories] = useState([]);
   const [values, setValues] = useState({
     totalGuests: "",
@@ -37,12 +36,11 @@ const Categories = () => {
   };
   const handleTableData = () => {
     dispatch(addTableData(values));
-    setOpenModal(false)
+    setOpenModal(false);
   };
 
   const getCategories = useCallback(async () => {
     try {
-      // setLoading(true);
       const { data: category, error } = await supabase
         .from("category")
         .select("*");

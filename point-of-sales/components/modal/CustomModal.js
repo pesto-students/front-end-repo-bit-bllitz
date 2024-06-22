@@ -4,7 +4,7 @@ import styles from "./CustomModal.module.scss";
 
 const CustomModal = ({ openModal, onClose, children }) => {
   return (
-    <Modal open={openModal} onClose={onClose}>
+    <Modal disableAutoFocus open={openModal} onClose={onClose}>
       <Paper className={styles.paper}>{children}</Paper>
     </Modal>
   );

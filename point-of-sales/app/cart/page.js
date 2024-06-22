@@ -4,10 +4,6 @@ import styles from "./Cart.module.scss";
 import Header from "@/components/header/Header";
 import { supabase } from "../../supabase/supabase";
 import { useAppContext } from "@/context";
-import { selectCartItems } from "@/lib/redux/selectors/cardSelector";
-const { v4: uuidv4 } = require("uuid");
-import orderSlice, { generateOrder } from "@/lib/redux/slices/orderSlice";
-import { store } from "@/lib/redux/store";
 import {
   Box,
   Button,
@@ -33,10 +29,9 @@ import {
   increaseQuantity,
   removeItem,
 } from "@/lib/redux/slices/cartSlice";
-import { setUserData } from "@/lib/redux/slices/userSlice";
+import Empty from "@/components/empty/Empty";
 
 let cartItems = [];
-let orderId = 0;
 let cart = [];
 const page = () => {
   const style = {
@@ -56,19 +51,21 @@ const page = () => {
   };
 
   cart = useSelector((state) => state.cart.items);
-  console.log(cart);
+  const table = useSelector((state) => state.table.tableDetails);
+  const { assignedTable: tableNumber = "", totalGuests = "" } = table;
+
   cartItems = cart;
   const dispatch = useDispatch();
   const { user, setUser } = useAppContext();
   const [quantity, setQuantity] = useState(1);
   const [total, setTotal] = useState(0);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(true);
   useEffect(() => {
     if (success) {
-      // setTimeout(() => {
-      //   setSuccess(false);
-      //   dispatch(clearCart());
-      // }, 2000);
+      setTimeout(() => {
+        setSuccess(false);
+        dispatch(clearCart());
+      }, 2000);
     }
   }, [success]);
   const fetchUser = async () => {
@@ -106,39 +103,36 @@ const page = () => {
   };
   const placeOrder = async () => {
     const { data: user, error: usererror } = await supabase.auth.getUser();
-    dispatch(setUserData(user.user));
-    orderId = orderId + 1;
-    // const orderId = uuidv4()
-    console.log(orderId);
-    console.log(cartItems);
-
-    // Dispatch action to generate order
 
     // Insert order into Supabase
     const { data, error } = await supabase
       .from("orders")
       .insert([
         {
-          order_id: orderId,
           waiter_id: user.user.id,
           total_amount: total,
           created_at: new Date(),
           updated_at: null,
           status: "active",
+          total_customers: totalGuests,
+          table_number: tableNumber,
         },
       ])
       .select();
-    console.log(data, " new data orders");
     if (error) {
       console.log("error in data orders", error);
       throw error;
+    } else if (data && data.length > 0) {
+      const { order_id } = data[0];
+      await updateOrderItem(order_id, user.user.id);
+    } else {
+      throw new Error("No data available or data is empty.");
     }
-    await updateOrderItem(orderId, user.user.id);
   };
 
   const updateOrderItem = async (orderId, waiter_id) => {
     cartItems.map((item) => {
-      insertFoodItem(orderId, item.id, 1, waiter_id);
+      insertFoodItem(orderId, item.id, item.quantity, waiter_id);
     });
   };
   const insertFoodItem = async (orderId, food_id, quantity, waiter_id) => {
@@ -147,7 +141,7 @@ const page = () => {
       .insert({
         order_id: orderId,
         food_id: food_id,
-        quantity: 1,
+        quantity,
         waiter_id: waiter_id,
       })
       .select();
@@ -158,44 +152,7 @@ const page = () => {
       setSuccess(true);
     }
   };
-  // const placeOrder = async () => {
-  //   const { data: user, error: usererror } = await supabase.auth.getUser();
 
-  //   console.log(user);
-  //   orderId = orderId + 1;
-  //   // const orderId = uuidv4()
-  //   console.log(orderId);
-  //   console.log(cartItems);
-
-  //   // Dispatch action to generate order
-
-  //   // Insert order into Supabase
-  //   const { error } = await supabase.from("orders").insert([
-  //     {
-  //       order_id: orderId,
-  //       waiter_id: user.user.id,
-  //       total_amount: 120,
-  //       created_at: new Date(),
-  //       updated_at: null,
-  //       status: "active",
-  //     },
-  //   ]);
-  //   if (error) {
-  //     throw error;
-  //   }
-  //   await updateOrderItem(orderId);
-  // };
-
-  // const updateOrderItem = async (orderId) => {
-  //   cartItems.map((item) => {
-  //     insertFoodItem(orderId, item.id, 1);
-  //   });
-  // };
-  // const insertFoodItem = async (orderId, food_id, quantity) => {
-  //   await supabase
-  //     .from("order_items")
-  //     .insert({ order_id: orderId, food_id: food_id, quantity: 1 });
-  // };
   const handleRemoveItem = (id) => {
     dispatch(removeItem(id));
   };
@@ -321,10 +278,7 @@ const page = () => {
           </Grid>
         </>
       ) : (
-        <div className={styles.empty}>
-          <ShoppingCart />
-          <Typography className={styles.info}>Your cart is empty!</Typography>
-        </div>
+        <Empty icon={<ShoppingCart />} info={"Your cart is empty!"} />
       )}
       <Modal
         open={success}
@@ -342,13 +296,7 @@ const page = () => {
             }}
             color={"success"}
           />
-          <Typography
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-            textAlign={"center"}
-            fontFamily={"Gilory-SemiBold"}
-          >
+          <Typography className={styles.success}>
             Your order has been placed successfully
           </Typography>
         </Box>

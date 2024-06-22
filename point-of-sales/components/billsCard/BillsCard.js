@@ -8,18 +8,31 @@ const BillsCard = (props) => {
     <div className={styles.BillsCard} onClick={() => onClick(order)}>
       <div className={styles.details}>
         <div className={styles.status}>
-          <Typography className={styles.orderNo}>{`Order #${order.order_id}`}</Typography>
+          <Typography
+            className={styles.orderNo}
+          >{`Order #${order.order_id}`}</Typography>
           <Typography className={styles.active}>
-            <CircleRounded sx={{ fontSize: "0.6rem", color: "#0BD60B" }} />
-            {order?.status}
+            <CircleRounded
+              sx={{
+                fontSize: "0.6rem",
+                color: order?.status == "active" ? "#0BD60B" : "#c8161d",
+              }}
+            />
+            {order?.status == "active" ? "Active" : "Paid"}
           </Typography>
         </div>
-        <Typography className={styles.orderNo}>{order.total_amount}Rs</Typography>
+        <Typography className={styles.orderNo}>
+          ₹ {order.total_amount}
+        </Typography>
       </div>{" "}
       <div className={styles.tableDets}>
-        <Typography className={styles.table}>Table 2c</Typography>
+        <Typography className={styles.table}>
+          Table {order?.table_number}
+        </Typography>
         <CircleRounded sx={{ fontSize: "0.6rem", color: "#D9D9D9" }} />
-        <Typography className={styles.table}>2 Guests</Typography>
+        <Typography className={styles.table}>
+          {order?.total_customers} Guests
+        </Typography>
       </div>
     </div>
   );

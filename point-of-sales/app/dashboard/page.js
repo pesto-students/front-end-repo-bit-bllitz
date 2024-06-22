@@ -69,21 +69,6 @@ const Dashboard = () => {
     setValue(event.target.value);
   };
 
-  const getPercentageOfOrders = (data) => {};
-
-  const getTotalOrders = async () => {
-    try {
-      const totalOrders = await fetch("/api/orders");
-      console.log("totalOrders", totalOrders.data);
-      const data = totalOrders.data;
-      // setOrders;
-    } catch (error) {
-      console.error("Error fetching orders:", error.message);
-    }
-  };
-  useEffect(() => {
-    getTotalOrders();
-  }, []);
   const options = {
     plugins: {
       datalabels: {
@@ -295,79 +280,6 @@ const Dashboard = () => {
                 />
               </Card>
             </Grid>
-            {/* <Grid item xs={4} className={styles.trending}>
-          <Card elevation={2} className={styles.chartCard}>
-            <Typography variant="h6" className={styles.title}>
-              Trending Dishes
-            </Typography>
-            <div className={styles.headContainer}>
-              <Typography variant="body2" className={styles.head}>
-                Dishes
-              </Typography>
-              <Typography variant="body2" className={styles.head}>
-                Orders
-              </Typography>
-            </div>
-            <div className={styles.chart}>
-              <div className={styles.trendingTable}>
-                {dummyData.map((item, i) => (
-                  <div className={styles.details}>
-                    <div className={styles.itemDets}>
-                      <Avatar></Avatar>
-                      <div className={styles.specs}>
-                        <Chip
-                          label="Food"
-                          variant="contained"
-                          className={styles.chip}
-                          color={"primary"}
-                        />
-                        <Typography variant="body2" className={styles.item}>
-                          Cheeseburgers
-                        </Typography>
-                      </div>
-                    </div>
-                    <div className={styles.itemPrice}>₹36</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
-        </Grid> */}
-            {/* <Grid item xs={4} className={styles.tableData}>
-          <Card elevation={2} className={styles.chartCard}>
-            <Typography variant="h6" className={styles.title}>
-              Best Employees
-            </Typography>
-            <div className={styles.headContainer}>
-              <Typography variant="body2" className={styles.head}>
-                Employees
-              </Typography>
-              <Typography variant="body2" className={styles.head}>
-                Earnings
-              </Typography>
-            </div>
-            <div className={styles.chart}>
-              <div className={styles.trendingTable}>
-                {dummyData.map((item, i) => (
-                  <div className={styles.details}>
-                    <div className={styles.itemDets}>
-                      <Avatar></Avatar>
-                      <div className={styles.specs}>
-                        <Typography variant="body2" className={styles.item1}>
-                          Theresa Web
-                        </Typography>
-                        <Typography variant="body2" className={styles.item}>
-                          Wait
-                        </Typography>
-                      </div>
-                    </div>
-                    <div className={styles.itemPrice}>₹23</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
-        </Grid> */}
           </Grid>
         </div>
       )}

@@ -21,7 +21,6 @@ import UserLoginData from "@/components/profile/UserLoginData";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../supabase/supabase";
 import Progress from "@/components/progress/Progress";
-import { useAppContext } from "@/context";
 import { useDispatch } from "react-redux";
 import Loading from "@/components/loading/Loading";
 import { resetState } from "@/lib/redux/slices/resetSlice";
@@ -41,12 +40,8 @@ const page = () => {
     justifyContent: "center",
     borderRadius: 3,
   };
-  const { setUser } = useAppContext();
+  const dispatch = useDispatch();
   const router = useRouter();
-  const [profileData, setProfileData] = useState({
-    profileInfo: {},
-    userId: "",
-  });
   const [selectedIndex, setSelectedIndex] = useState(1);
   const [deleteModal, setDelModal] = useState(false);
   const [orderData, setOrderData] = useState({
@@ -55,7 +50,7 @@ const page = () => {
   });
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    gender: "", // Initialize gender as an empty string
+    gender: "",
     first_name: "",
     last_name: "",
     email: "",
@@ -65,10 +60,7 @@ const page = () => {
     pincode: "",
   });
   const getUserData = async () => {
-    // setLoading(true);
     const { data: userData, error } = await supabase.auth.getSession();
-    // setUser(userData);
-    console.log("userData in profile", userData);
     if (userData.session) {
       const userId = userData.session.user.id;
       const { data: profileFromId, error } = await supabase
@@ -76,10 +68,9 @@ const page = () => {
         .select("*")
         .eq("id", userId);
 
-      if (error) console.log("profilesErr", error);
-      console.log("profilesData", profileFromId[0]);
+      if (error) console.log("profiles Err", error);
       const fullname = profileFromId[0]?.fullname;
-      const [first_name, last_name] = fullname ? fullname.split(" ") : ["", ""]; // Split fullname into first_name and last_name
+      const [first_name, last_name] = fullname ? fullname.split(" ") : ["", ""];
       setFormData({ ...profileFromId[0], first_name, last_name });
       setLoading(false);
     }
@@ -88,16 +79,14 @@ const page = () => {
   useEffect(() => {
     getUserData();
   }, []);
-  const dispatch = useDispatch();
+
   const handleListItemClick = async (event, index) => {
     setSelectedIndex(index);
     switch (index) {
       case 3:
         setLoading(true);
         const signoutRes = await supabase.auth.signOut();
-        console.log("signout res", signoutRes);
         dispatch(resetState());
-
         router.push("/auth/signin");
         router.refresh();
 
@@ -142,7 +131,7 @@ const page = () => {
       .from("orders")
       .select("*")
       .eq("waiter_id", userId);
-console.log(orderData,'orderData');
+    console.log(orderData, "orderData");
     if (orderData.length > 0) {
       const totalAmount = orderData.reduce(
         (sum, order) => sum + (order.total_amount || 0),
@@ -221,15 +210,6 @@ console.log(orderData,'orderData');
                   </ListItemButton>
                   <ListItemButton
                     className={`${styles.listBtn} ${
-                      selectedIndex == 2 && styles.activeTab
-                    }`}
-                    selected={selectedIndex == 2}
-                    onClick={(event) => handleListItemClick(event, 2)}
-                  >
-                    Login and Password
-                  </ListItemButton>
-                  <ListItemButton
-                    className={`${styles.listBtn} ${
                       selectedIndex == 3 && styles.activeTab
                     }`}
                     selected={selectedIndex == 3}
@@ -238,16 +218,6 @@ console.log(orderData,'orderData');
                     Logout
                   </ListItemButton>
                 </List>
-                <div className={styles.btnContainer}>
-                  <Button
-                    variant="text"
-                    startIcon={<DeleteIcon />}
-                    className={styles.delBtn}
-                    onClick={handleDeleteAcc}
-                  >
-                    Delete Account
-                  </Button>
-                </div>
               </Card>
             </Grid>
             <Grid item md={1}></Grid>
@@ -256,36 +226,6 @@ console.log(orderData,'orderData');
             </Grid>
             <Grid item md={2.5} xs={0} />
           </Grid>
-          {deleteModal && (
-            <Modal open={deleteModal} onClose={() => setDelModal(false)}>
-              <Box sx={style}>
-                <ReportIcon sx={{ color: "#c3040a", fontSize: "3rem " }} />
-                <Typography
-                  id="modal-modal-title"
-                  className={styles.modalTitle}
-                  variant="h6"
-                  component="h2"
-                >
-                  Are you sure you want to delete your account permanently?
-                </Typography>
-                <Typography
-                  id="modal-modal-description"
-                  className={styles.modalSub}
-                  sx={{ mt: 2 }}
-                >
-                  Deleting your account will lead to the permanent loss of data.{" "}
-                </Typography>
-                <div className={styles.modalBtn}>
-                  <Button variant="outlined" onClick={() => setDelModal(false)}>
-                    Cancel
-                  </Button>
-                  <Button variant="contained" onClick={handleDeleteAcc}>
-                    Yes, Delete
-                  </Button>
-                </div>
-              </Box>
-            </Modal>
-          )}
         </div>
       )}
     </>

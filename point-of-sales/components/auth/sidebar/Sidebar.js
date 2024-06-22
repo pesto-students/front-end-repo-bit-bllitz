@@ -21,7 +21,7 @@ const Sidebar = ({
           priority
         />
         <Typography variant="h6" className={styles.tagLine}>
-          Manage sales, inventory<br></br> and other transactions
+          Effortless order processing <br></br>and seamless transactions.
         </Typography>
       </Grid>
       <Grid item md={6} sm={6} className={styles.authForm}>
@@ -39,7 +39,10 @@ const Sidebar = ({
             textAlign={"center"}
           >
             {actionText}
-            <Link href={navigateLink} className={styles.link}> {linkText}</Link>
+            <Link href={navigateLink} className={styles.link}>
+              {" "}
+              {linkText}
+            </Link>
           </Typography>
         </div>
       </Grid>
