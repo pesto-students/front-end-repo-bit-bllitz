@@ -200,7 +200,6 @@ const Bills = () => {
         handleUpiPayment();
         break;
       case "Cash":
-        // setPaymentStatus(true);
         updateOrder();
         setPaymentModal(false);
 
@@ -246,15 +245,15 @@ const Bills = () => {
                   <Typography className={styles.orderNo}>
                     Order #{selectedOrder.order_id}
                   </Typography>
-                  {/* {selectedOrder.status === PAYMENT_STATUS_ACTIVE ? ( */}
-                    <div
-                      className={selectedOrder.status=='completed' ? styles.completed : styles.active}
-                    >
-                      {selectedOrder.status=='completed' ? "Paid" : "Active"}
-                    </div>
-                  {/* ) : ( */}
-                    {/* <div className={styles.completed}>Completed</div> */}
-                  {/* )} */}
+                  <div
+                    className={
+                      selectedOrder.status == "completed"
+                        ? styles.completed
+                        : styles.active
+                    }
+                  >
+                    {selectedOrder.status == "completed" ? "Paid" : "Active"}
+                  </div>
                 </div>
                 <Divider />
                 <div className={styles.detailsContainer}>

@@ -3,6 +3,23 @@
   align-items: center;
   justify-content: center;
 }
+.align {
+  @include centerAlign();
+  justify-content: space-between;
+  .tableDetails {
+    display: flex;
+    align-items: center;
+    padding-right: 2.5rem;
+    justify-content: space-between;
+    gap: 2rem;
+    .info {
+      font-weight: 600;
+    }
+    .btn{
+      background-color: #ffd049;
+    }
+  }
+}
 .menu {
   .categories,
   .SubCategories {

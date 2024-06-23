@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import ActionAreaCard from "../../../components/card/ActionAreaCard.js";
 import styles from "../menu.module.scss";
-import { Grid } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import CustomModal from "@/components/modal/CustomModal.js";
 import CustomInput from "@/components/auth/input/CustomInput.js";
 import CustomButton from "@/components/button/CustomButton.js";
@@ -14,12 +14,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSubcategory } from "@/lib/redux/slices/sidePanelSlice.js";
 import Loading from "@/components/loading/Loading.js";
 import { addTableData } from "@/lib/redux/slices/tableSlice.js";
+import { Edit } from "@mui/icons-material";
 
 const Categories = () => {
   const tableDetails = useSelector((state) => state.table.tableDetails);
   const [openModal, setOpenModal] = useState(
     () => Object.keys(tableDetails).length == 0
-  );  const { push } = useRouter();
+  );
+  const { push } = useRouter();
   const [categories, setCategories] = useState([]);
   const [values, setValues] = useState({
     totalGuests: "",
@@ -76,7 +78,29 @@ const Categories = () => {
         <Loading />
       ) : (
         <>
-          <Header padding={"1rem 2.5rem"} title={"Categories"} />
+          <div className={styles.align}>
+            <Header padding={"1rem 2.5rem"} title={"Categories"} />
+            {tableDetails.totalGuests && (
+              <div className={styles.tableDetails}>
+                <Typography variant="body1">
+                  Number of Guests:{" "}
+                  <span className={styles.info}>
+                    {tableDetails.totalGuests}{" "}
+                  </span>
+                </Typography>
+                <Typography variant="body1">
+                  Table Number:{" "}
+                  <span className={styles.info}>
+                    {tableDetails.assignedTable}{" "}
+                  </span>
+                </Typography>
+
+                <Button variant="contained" onClick={() => setOpenModal(true)} className={styles.btn}>
+                  <Edit sx={{ color: "#333" }} />
+                </Button>
+              </div>
+            )}
+          </div>
           <Grid container className={styles.menu}>
             {categories.map((category) => (
               <Grid item md={3} className={styles.categories}>
