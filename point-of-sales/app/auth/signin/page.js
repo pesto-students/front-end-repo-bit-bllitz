@@ -1,4 +1,4 @@
-"use client"; // This is a client component 👈🏽
+"use client";
 
 import CustomInput from "@/components/auth/input/CustomInput";
 import Sidebar from "@/components/auth/sidebar/Sidebar";
@@ -17,18 +17,27 @@ import { setUserData } from "@/lib/redux/slices/userSlice";
 const Signin = () => {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ visible: false, msg: " " });
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
   const userState = useSelector((state) => state.auth);
   const { user = {} } = userState;
-  useEffect(() => {
-    if (Object.keys(user).length > 0) {
-      router.push("/dashboard");
+  const fetchUser = async () => {
+    const { data: user, error } = await supabase.auth.getUser();
+    console.log(user, "userData");
+    if (error) {
+      console.log(error, "error in signin");
+    } else {
+      console.log("user data", user.user.id);
+      if (user.user.id) {
+        router.push("/dashboard");
+      }
     }
+  };
+  useEffect(() => {
+    fetchUser();
   }, []);
+  const [btnLoading, setBtnLoading] = useState(false);
   const dispatch = useDispatch();
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -36,20 +45,22 @@ const Signin = () => {
       return alert("PLease enter a valid email and password");
     }
     try {
+      setBtnLoading(true);
       const { data: dataSupabase, error } =
         await supabase.auth.signInWithPassword({
           email,
           password,
         });
       if (error) {
+        setBtnLoading(false);
         console.log(error.message, "error in signin");
-        setError("Sorry! something went wrong.");
         setLoading(false);
         setToast({
           visible: true,
           msg: error.message,
         });
       } else {
+        setBtnLoading(false);
         setLoading(true);
 
         // if (dataSupabase)
@@ -66,6 +77,7 @@ const Signin = () => {
     } catch (error) {
       console.log(error.message);
     } finally {
+      setBtnLoading(false);
       setLoading(false); // Ensure loading is set to false in the finally block
     }
   };
@@ -95,10 +107,12 @@ const Signin = () => {
               onChange={(e) => setPassword(e.target.value)}
               value={password}
             />
-            <CustomButton text={"Sign in"} onClick={handleSignIn} />
-            <Typography variant="body1" className={styles.link}>
-              <Link href={"/auth/reset"}>Forgot Password?</Link>
-            </Typography>
+            <CustomButton
+              text={btnLoading ? "Signing in..." : "Sign in"}
+              disabled={btnLoading}
+              onClick={handleSignIn}
+              btnLoading={btnLoading}
+            />
           </Sidebar>
           <Snackbar
             anchorOrigin={{ vertical: "top", horizontal: "right" }}

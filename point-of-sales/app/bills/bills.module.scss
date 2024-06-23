@@ -7,7 +7,7 @@
 @mixin statusBtn {
   width: 10rem;
   color: #040404;
-  font-family: "Gilory-SemiBold";
+  font-weight: 500;
   font-size: 0.9rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -55,13 +55,12 @@
   opacity: 0.8;
 }
 
-
 .bills {
   position: relative;
   padding: 2rem 2.5rem 0 1rem;
   .billsHead {
     color: #040404;
-    font-family: "Gilory-SemiBold";
+    font-weight: 500;
     font-size: 1.9rem;
   }
   .details {
@@ -80,7 +79,7 @@
       justify-content: space-between;
       margin-bottom: 1rem;
       .orderNo {
-        font-family: "Gilory-SemiBold";
+        font-weight: 500;
         font-size: 1.5rem;
       }
       .active {
@@ -98,7 +97,7 @@
       padding: 0 0.5rem;
       margin-top: 1rem;
       .head {
-        font-family: "Gilory-SemiBold";
+        font-weight: 500;
         font-size: 1rem;
       }
       .customerDets {
@@ -107,13 +106,13 @@
         align-items: center;
         justify-content: space-between;
         .title {
-          font-family: "Gilory-SemiBold";
+          font-weight: 500;
           color: #a7a7a7;
           font-size: 1rem;
           margin-bottom: 0.5rem;
         }
         .sub {
-          font-family: "Gilory-SemiBold";
+          font-weight: 500;
           color: #040404;
           font-size: 1.2rem;
           margin-left: 0.1rem;
@@ -128,7 +127,7 @@
           justify-content: space-between;
           margin-bottom: 1rem;
           .subs {
-            font-family: "Gilory-SemiBold";
+            font-weight: 500;
             color: #a7a7a7;
             margin-top: 1rem;
           }
@@ -147,7 +146,7 @@
               display: flex;
               align-items: center;
               .foodItem {
-                font-family: "Gilory-SemiBold";
+                font-weight: 500;
                 margin-left: 1rem;
               }
               .imgContainer {
@@ -165,7 +164,7 @@
             .price {
               display: flex;
               justify-content: flex-end;
-              font-family: "Gilory-SemiBold";
+              font-weight: 500;
             }
           }
           .orderCard:last-child {
@@ -196,7 +195,7 @@
           width: 100%;
           margin-bottom: 0.5rem;
           .total {
-            font-family: "Gilory-SemiBold";
+            font-weight: 500;
           }
         }
         .chargeBtn {
@@ -204,13 +203,16 @@
           text-transform: capitalize;
           color: #000;
           background-color: #ffca40;
-          font-family: "Gilory-SemiBold";
+          font-weight: 600;
+          font-family: "__Poppins_b8bd98", "__Poppins_Fallback_b8bd98";
         }
         .paidBtn {
           width: 80%;
           text-transform: capitalize;
           color: #fff;
-          font-family: "Gilory-SemiBold";
+          font-weight: 500;
+          font-family: "__Poppins_b8bd98", "__Poppins_Fallback_b8bd98";
+
           background-color: #008000;
         }
       }
@@ -220,7 +222,7 @@
 .paymentModal {
   width: 100%;
   .heading {
-    font-family: "Gilory-SemiBold" !important;
+    font-weight: 500 !important;
     font-size: 1rem;
     color: #040404;
     margin-bottom: 0.5rem;
@@ -230,7 +232,7 @@
     background-color: #ffca40;
     color: #000;
     text-transform: capitalize;
-    font-family: "Gilory-SemiBold";
+    font-weight: 600;
     margin-top: 1rem;
   }
 }

@@ -20,6 +20,8 @@ import { supabase } from "../../supabase/supabase";
 import Loading from "@/components/loading/Loading";
 import Script from "next/script";
 import Razorpay from "razorpay";
+import { Receipt } from "@mui/icons-material";
+import Empty from "@/components/empty/Empty";
 
 const PAYMENT_STATUS_COMPLETED = "completed";
 const PAYMENT_STATUS_ACTIVE = "active";
@@ -41,11 +43,17 @@ const Bills = () => {
         .from("orders")
         .select("*")
         .eq("waiter_id", user.id);
+      const activeOrders = orders.filter((order) => order.status === "active");
+      const otherOrders = orders.filter((order) => order.status !== "active");
 
-      setOrders(orders);
-      setSelectedOrder(orders[0]);
+      const orderedOrders = [...activeOrders, ...otherOrders];
+
+      setOrders(orderedOrders);
+      setSelectedOrder(activeOrders.length > 0 ? activeOrders[0] : orders[0]);
     } catch (err) {
       console.log("err", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,6 +62,17 @@ const Bills = () => {
       getAllOrders();
     }
   }, [user]);
+
+  const updateOrder = async () => {
+    const { data, error } = await supabase
+      .from("orders")
+      .update({ status: "completed" })
+      .eq("order_id", selectedOrder.order_id)
+      .select();
+    console.log(data, "updatedorder");
+    setPaymentModal(false);
+    getAllOrders();
+  };
 
   const getOrderDetails = async () => {
     try {
@@ -74,6 +93,7 @@ const Bills = () => {
       setOrderItems(order_items);
       setLoading(false);
     } catch (err) {
+      setLoading(false);
       console.log("err", err);
     }
   };
@@ -83,68 +103,6 @@ const Bills = () => {
       getOrderDetails();
     }
   }, [selectedOrder]);
-
-  const currentOrderDetails = {
-    order_id: " Order#35",
-    status: "Active",
-    guest: {
-      name: "Kate Willson",
-      totalGuests: 2,
-      tableNumber: 5,
-      paymentType: "Cash",
-    },
-    total_amount: "900Rs",
-    orders: [
-      {
-        img: "/images/burger.png",
-        quantity: 1,
-        price: 450,
-        name: "Hamburger",
-      },
-      {
-        img: "/images/burger.png",
-        quantity: 1,
-        price: 450,
-        name: "Pizza",
-      },
-      {
-        img: "/images/burger.png",
-        quantity: 1,
-        price: 450,
-        name: "Hamburger",
-      },
-      {
-        img: "/images/burger.png",
-        quantity: 1,
-        price: 450,
-        name: "Pizza",
-      },
-      {
-        img: "/images/burger.png",
-        quantity: 1,
-        price: 450,
-        name: "Hamburger",
-      },
-      {
-        img: "/images/burger.png",
-        quantity: 1,
-        price: 450,
-        name: "Pizza",
-      },
-      {
-        img: "/images/burger.png",
-        quantity: 1,
-        price: 450,
-        name: "Hamburger",
-      },
-      {
-        img: "/images/burger.png",
-        quantity: 1,
-        price: 450,
-        name: "Pizza",
-      },
-    ],
-  };
 
   const style = {
     position: "absolute",
@@ -165,7 +123,7 @@ const Bills = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: 2000,
+          amount: selectedOrder.total_amount * 100,
           currency: "INR",
         }),
       });
@@ -180,32 +138,33 @@ const Bills = () => {
       console.error("There was a problem with your fetch operation:", error);
     }
   };
-  const handlePayment = async () => {
+  const handlePayment = () => {
+    setPaymentModal(true);
+  };
+  const handleUpiPayment = async () => {
     try {
       const orderId = await createOrderId();
 
-      console.log("Razorpay Key ID:", process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
-
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Use the public key here
-        amount: 2000 * 100, // Amount in smallest currency unit
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: selectedOrder?.total_amount * 100,
         currency: "INR",
         name: "Smart POS",
         description: "Test Transaction",
-        image: "/images/pos.png", // Example logo URL
-        order_id: orderId, // This is the order ID returned by your backend
+        image: "/images/pos.png",
+        order_id: orderId,
         handler: function (response) {
           // Handle successful payment here
           console.log(response, "razorpay response");
-          if(response?.razorpay_order_id){
-            setPaymentStatus(true);
-
+          if (response?.razorpay_order_id) {
+            setPaymentModal(false);
+            updateOrder();
           }
         },
         prefill: {
-          name: "Your Name",
+          name: selectedOrder.customer_name,
           email: "your.email@example.com",
-          contact: "9000090000",
+          contact: "",
         },
         notes: {
           address: "Razorpay Corporate Office",
@@ -214,12 +173,12 @@ const Bills = () => {
           color: "#ffca40",
         },
         method: {
-          card: false,        // Disable card payments
-          upi: true,          // Enable UPI
-          netbanking: true,   // Enable netbanking
-          wallet: true,       // Enable wallets
-          emi: true           // Enable EMI
-        }
+          card: false, // Disable card payments
+          upi: true, // Enable UPI
+          netbanking: true, // Enable netbanking
+          wallet: true, // Enable wallets
+          emi: true, // Enable EMI
+        },
       };
 
       // Ensure Razorpay is available globally
@@ -238,11 +197,11 @@ const Bills = () => {
     switch (paymentValue) {
       case "UPI":
         //upi logic
-        // setPaymentModal(false);
-        handlePayment();
+        handleUpiPayment();
         break;
       case "Cash":
-        setPaymentStatus(true);
+        // setPaymentStatus(true);
+        updateOrder();
         setPaymentModal(false);
 
         break;
@@ -253,10 +212,13 @@ const Bills = () => {
   const handleChange = (eve) => {
     setValue(eve.target.value);
   };
-
+  useEffect(() => {
+    console.log(paymentValue, "value");
+  }, [paymentValue]);
   const onOrderClickHandle = (order) => {
     setSelectedOrder(order);
   };
+
   return (
     <>
       <Script
@@ -265,7 +227,7 @@ const Bills = () => {
       />
       {loading ? (
         <Loading />
-      ) : (
+      ) : orderItems.length > 0 ? (
         <div className={styles.bills}>
           {selectedOrder && (
             <Grid container>
@@ -284,15 +246,15 @@ const Bills = () => {
                   <Typography className={styles.orderNo}>
                     Order #{selectedOrder.order_id}
                   </Typography>
-                  {selectedOrder.status === PAYMENT_STATUS_ACTIVE ? (
+                  {/* {selectedOrder.status === PAYMENT_STATUS_ACTIVE ? ( */}
                     <div
-                      className={paymentDone ? styles.completed : styles.active}
+                      className={selectedOrder.status=='completed' ? styles.completed : styles.active}
                     >
-                      {paymentDone ? "Completed" : "Active"}
+                      {selectedOrder.status=='completed' ? "Paid" : "Active"}
                     </div>
-                  ) : (
-                    <div className={styles.completed}>Completed</div>
-                  )}
+                  {/* ) : ( */}
+                    {/* <div className={styles.completed}>Completed</div> */}
+                  {/* )} */}
                 </div>
                 <Divider />
                 <div className={styles.detailsContainer}>
@@ -300,28 +262,29 @@ const Bills = () => {
                     Details
                   </Typography>
                   <div className={styles.customerDets}>
-                    <div item md={2}>
-                      <Typography className={styles.title}>Table</Typography>
-                      <Typography className={styles.sub}>
-                        {currentOrderDetails.guest.tableNumber}
+                    <div>
+                      <Typography className={styles.title}>
+                        Table Number:{" "}
+                        <span className={styles.sub}>
+                          {selectedOrder?.table_number}
+                        </span>{" "}
                       </Typography>
                     </div>
-                    <div item md={2}>
-                      <Typography className={styles.title}>Guests</Typography>
-                      <Typography className={styles.sub}>
-                        {currentOrderDetails.guest.totalGuests}
+
+                    <div>
+                      <Typography className={styles.title}>
+                        Total Customer :{" "}
+                        <span className={styles.sub}>
+                          {selectedOrder.total_customers}
+                        </span>
                       </Typography>
                     </div>
-                    <div item md={5}>
-                      <Typography className={styles.title}>Customer</Typography>
-                      <Typography className={styles.sub}>
-                        {currentOrderDetails.guest.name}
-                      </Typography>
-                    </div>
-                    <div item md={3}>
-                      <Typography className={styles.title}>Payment</Typography>
-                      <Typography className={styles.sub}>
-                        {currentOrderDetails.total_amount}
+                    <div>
+                      <Typography className={styles.title}>
+                        Total Amount :{" "}
+                        <span className={styles.sub}>
+                          ₹ {selectedOrder.total_amount}
+                        </span>
                       </Typography>
                     </div>
                   </div>
@@ -345,11 +308,11 @@ const Bills = () => {
                             </div>
                             <Typography className={styles.foodItem}>
                               {" "}
-                              {item.quantity}x{item.food_item.name}
+                              {item.quantity} x {item.food_item.name}
                             </Typography>
                           </Grid>
                           <Grid item md={5} className={styles.price}>
-                            Rs {item.quantity * item.food_item.price}
+                            ₹ {item.quantity * item.food_item.price}
                           </Grid>
                         </Grid>
                       ))}
@@ -359,19 +322,20 @@ const Bills = () => {
                     <div className={styles.grandtotal}>
                       <Typography className={styles.total}>Total</Typography>
                       <Typography className={styles.total}>
-                        {selectedOrder.total_amount} Rs
+                        ₹ {selectedOrder.total_amount}
                       </Typography>
                     </div>
                     <Button
                       className={
-                        paymentDone ? styles.paidBtn : styles.chargeBtn
+                        selectedOrder.status == "completed"
+                          ? styles.paidBtn
+                          : styles.chargeBtn
                       }
-                      onClick={() => setPaymentModal(true)}
+                      onClick={handlePayment}
                     >
-                      {paymentDone ||
-                      selectedOrder.status === PAYMENT_STATUS_COMPLETED
-                        ? `Successfully Paid ${selectedOrder?.total_amount}`
-                        : `Charge customer Rs ${selectedOrder?.total_amount}`}
+                      {selectedOrder.status == "completed"
+                        ? `Successfully Paid ₹ ${selectedOrder?.total_amount}`
+                        : `Charge customer ₹ ${selectedOrder?.total_amount}`}
                     </Button>
                   </div>
                 </div>
@@ -404,7 +368,7 @@ const Bills = () => {
                     <FormControlLabel
                       value="UPI"
                       control={<Radio />}
-                      label="UPI"
+                      label="Other"
                     />
                     <FormControlLabel
                       value="Cash"
@@ -423,6 +387,12 @@ const Bills = () => {
             </Modal>
           )}
         </div>
+      ) : (
+        <Empty
+          icon={<Receipt />}
+          info={"You Have No Orders"}
+          desc={"Add items to your cart and place your first order."}
+        />
       )}
     </>
   );

@@ -9,7 +9,7 @@ import {
   RadioGroup,
   Slide,
   Snackbar,
-  Typography,
+  Typography
 } from "@mui/material";
 import CustomInput from "../auth/input/CustomInput";
 import CustomButton from "../button/CustomButton";
@@ -82,7 +82,7 @@ const PersonalInfo = ({ formData, setFormData }) => {
   };
   return (
     <div>
-      <Typography variant="h5" className={styles.infoCopy}>
+      <Typography className={styles.infoCopy}>
         Personal Information
       </Typography>
       <FormControl className={styles.genderContainer}>
