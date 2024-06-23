@@ -59,7 +59,7 @@ const page = () => {
   const { user, setUser } = useAppContext();
   const [quantity, setQuantity] = useState(1);
   const [total, setTotal] = useState(0);
-  const [success, setSuccess] = useState(true);
+  const [success, setSuccess] = useState(false);
   useEffect(() => {
     if (success) {
       setTimeout(() => {
