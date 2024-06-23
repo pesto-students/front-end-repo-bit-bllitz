@@ -22,20 +22,11 @@ const Signin = () => {
   const router = useRouter();
   const userState = useSelector((state) => state.auth);
   const { user = {} } = userState;
-  const fetchUser = async () => {
-    const { data: user, error } = await supabase.auth.getUser();
-    console.log(user, "userData");
-    if (error) {
-      console.log(error, "error in signin");
-    } else {
-      console.log("user data", user.user.id);
-      if (user.user.id) {
-        router.push("/dashboard");
-      }
-    }
-  };
+
   useEffect(() => {
-    fetchUser();
+    if (Object.keys(user).length > 0) {
+      router.push("/dashboard");
+    }
   }, []);
   const [btnLoading, setBtnLoading] = useState(false);
   const dispatch = useDispatch();

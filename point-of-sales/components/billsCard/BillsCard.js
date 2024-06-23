@@ -15,7 +15,7 @@ const BillsCard = (props) => {
             <CircleRounded
               sx={{
                 fontSize: "0.6rem",
-                color: order?.status == "active" ? "#0BD60B" : "#c8161d",
+                color: order?.status == "active" ? "#FFD049" : "#008000",
               }}
             />
             {order?.status == "active" ? "Active" : "Paid"}

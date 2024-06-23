@@ -89,7 +89,7 @@
       }
       .completed {
         @include statusBtn();
-        background-color: #c8161d;
+        background-color: #008000;
         color: #fff;
       }
     }
