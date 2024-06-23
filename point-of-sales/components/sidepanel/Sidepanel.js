@@ -36,10 +36,14 @@ export default function Sidepanel() {
   const { id: userId = "" } = user;
   const { id: profileId = "" } = profile;
   useEffect(() => {
-    // if(panel==selectedIndex){
-    //   router.push(menuData[panel].href)
-    // }
-  }, []);
+    if (panel == selectedIndex) {
+      if (panel == 4) {
+        router.push("/profile");
+      } else {
+        router.push(menuData[panel].href);
+      }
+    }
+  }, []); 
   const getProfileDetails = async () => {
     let { data: profiles, error } = await supabase
       .from("profiles")
@@ -71,6 +75,9 @@ export default function Sidepanel() {
   };
 
   const handleProfile = () => {
+    dispatch(setSelectedTab(4));
+    setSelectedIndex(4);
+
     router.push("/profile");
   };
   return (
