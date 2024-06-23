@@ -64,7 +64,7 @@ const Signup = () => {
       email: formData.email,
       password: formData.password,
       options: {
-        emailRedirectTo: `${location.origin}/auth/callback`,
+        emailRedirectTo: `${location.origin}/auth/signin`,
         data: {
           full_name: formData.fullName,
           role: formData.role,
