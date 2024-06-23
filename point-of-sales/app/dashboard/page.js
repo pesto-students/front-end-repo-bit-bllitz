@@ -56,6 +56,7 @@ const Dashboard = () => {
   const userState = useSelector((state) => state.auth);
   const { user = {} } = userState;
   const [loading, setLoading] = useState(true);
+  const [totalOrders, setTotalOrders] = useState([]);
   useEffect(() => {
     if (!user.id) {
       router.push("/auth/signin");
@@ -134,6 +135,28 @@ const Dashboard = () => {
       value: "Month",
     },
   ];
+
+  const getAllOrders = async () => {
+    setLoading(true);
+    try {
+      let { data: orders, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("waiter_id", user.id);
+
+      setTotalOrders(orders);
+    } catch (err) {
+      console.log("err", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      getAllOrders();
+    }
+  }, [user]);
 
   return (
     <>
@@ -274,7 +297,7 @@ const Dashboard = () => {
               <Card className={styles.chartCard}>
                 <LinearProgressComponent
                   title={"Total Orders"}
-                  data={"89"}
+                  data={totalOrders?.length}
                   progress={totalOrdersCount}
                   color={"#C8161D"}
                 />
